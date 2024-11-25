@@ -1,0 +1,47 @@
+     hostname: erebor
+      machine: x86_64
+       osname: Linux
+    osrelease: 5.12.19-1-MANJARO
+    osversion: #1 SMP PREEMPT Tue Jul 20 20:57:37 UTC 2021
+   endianness: little endian
+   domainname: (none)
+       no cpu: 1
+     no cores: 8
+   no threads: 16
+       vendor: AMD
+   clockticks: 2057444000
+    cycle[ns]: 0.48604
+    ram total: 33677144064
+    ram free : 25659023360
+     pagesize: 4096
+  cachline sz: 64
+cpu info:
+   0  AMD Ryzen 7 3700X 8-Core Processor   0
+cpu/core/thread topology:
+   0 [0 [ 0 8 ]] [1 [ 1 9 ]] [2 [ 2 10 ]] [3 [ 3 11 ]] [4 [ 4 12 ]] [5 [ 5 13 ]] [6 [ 6 14 ]] [7 [ 7 15 ]] 
+cache info: 
+   0 : L1 32K Data  L1 32K Instruction  L2 512K Unified  L3 16384K Unified  
+
+
+cpuid: 
+cpuid     max: 16
+cpuid ext max: 0
+      sig: 0.0.0.0
+ vendor: AMD
+
+hw thread 0 clockticks: 2057444000
+hw thread 1 clockticks: 2057444000
+hw thread 2 clockticks: 2057444000
+hw thread 3 clockticks: 2057444000
+hw thread 4 clockticks: 2057444000
+hw thread 5 clockticks: 2057444000
+hw thread 6 clockticks: 2057444000
+hw thread 7 clockticks: 2057444000
+hw thread 8 clockticks: 2057444000
+hw thread 9 clockticks: 2057444000
+hw thread 10 clockticks: 2057444000
+hw thread 11 clockticks: 2057444000
+hw thread 12 clockticks: 2057444000
+hw thread 13 clockticks: 2057444000
+hw thread 14 clockticks: 2057444000
+hw thread 15 clockticks: 2057444000

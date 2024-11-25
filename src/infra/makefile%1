@@ -1,0 +1,310 @@
+# use ODI=xxx
+# to manipulate ~/obj/$(CPUARCH)/infra
+# like in
+# make clean ODI=xxx
+# make       ODI=xxx
+# without ODI, current directory is manipulated
+# make clean
+# make
+
+include ${HOME}/src/inc.mk
+
+
+CINCL = -I. -I..
+
+CFAVX = -mavx
+
+ifdef ODI
+OBJDIR = $(OBJBASEDIR)/infra
+vpath .o $(OBJBASEDIR)
+else
+OBJDIR = .
+vpath .o $(HOME)/src
+endif
+
+
+objdir = $(OBJDIR)
+
+OFS = BitvectorLong.o \
+      buckethistogram.o \
+      print_test_header.o \
+      random_string.o \
+      geocoord.o \
+      datejd.o \
+      linereader.o \
+      linereaderWithEdit.o \
+      commandreader.o \
+      temperature.o \
+      timestamp.o \
+      matrix.o \
+      gmsvd.o \
+      StringDictionaryHashed.o \
+      simpleexception.o \
+      simplecharcontainer.o \
+      like.o \
+      unionfind.o \
+      lageparameter.o \
+      stimestamp.o \
+      stime.o \
+      system.o \
+      WaveletTransformNonStd2dim.o \
+      bind_to_hw_thread.o \
+      cbind_to_hw_thread.o \
+      cmeasure.o \
+      cstring_hash.o \
+      double_vec_ops.o \
+      chisquare.o \
+
+
+# OBJALL = $(addprefix $(OBJDIR)/,$(OBS))
+
+BFS = main_system \
+      main_random_string \
+      main_prime \
+      main_bh \
+      main_multmatvec1 \
+      main_multmatvec2 \
+      main_multmatvec3 \
+      main_multmatvec4 \
+      main_multmatvec5 \
+      main_matrix \
+      main_vp \
+      main_Ax \
+      main_designmatrix \
+      main_qr \
+      main_uval \
+      main_mod_mersenne \
+      main_tabhash \
+      main_chisquare \
+      get_device_model \
+      main_rankperm \
+      main_invut
+
+
+# BINALL = $(addprefix $(OBJDIR),$(BFS))
+
+
+# special requires SSE, BMI2 etc. (intel only)
+
+NEEDSSIMD = main_multmatvec6 \
+            main_pdep \
+            gmstrstr16.o \
+            gmstrstr16_42.o \
+
+NEEDSMOSEK = mosekenv.o 
+
+ifeq ($(CPUARCH), x86_64)
+ifeq ($(HOST), wdfl32187349a)
+AFS = $(OFS) $(BFS) $(NEEDSSIMD) 
+else
+AFS = $(OFS) $(BFS) $(NEEDSSIMD) $(NEEDSMOSEK)
+endif
+else
+AFS = $(OFS) $(BFS)
+endif
+
+ALL = $(addprefix $(OBJDIR)/,$(AFS))
+
+all : $(ALL)
+	@ echo build for ${CPUARCH}
+
+
+$(OBJDIR)/main_rotmatrix : $(OBJDIR)/main_rotmatrix.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_rotmatrix.o : main_rotmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_rotmatrix.cc
+
+$(OBJDIR)/main_qr : $(OBJDIR)/main_qr.o $(OBJDIR)/matrix.o
+	$(CC) -g -o $@ $^
+
+$(OBJDIR)/main_qr.o : main_qr.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_qr.cc
+
+$(OBJDIR)/main_bh : $(OBJDIR)/main_bh.o $(OBJDIR)/buckethistogram.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_bh.o : main_bh.cc buckethistogram.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_bh.cc
+
+
+$(OBJDIR)/main_designmatrix : $(OBJDIR)/main_designmatrix.o $(OBJDIR)/gmsvd.o $(OBJDIR)/matrix.o $(OBJDIR)/double_vec_ops.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_designmatrix.o : main_designmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_designmatrix.cc
+
+
+$(OBJDIR)/main_matrix : $(OBJDIR)/main_matrix.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_matrix.o : main_matrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_matrix.cc
+
+$(OBJDIR)/main_vp : $(OBJDIR)/main_vp.o $(OBJDIR)/cmeasure.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_vp.o : main_vp.cc vp_ops.hh cmeasure.h
+	$(CC) $(CFLAGS) $(CFSIMD) $(CINCL) -c -o $@ main_vp.cc
+
+
+$(OBJDIR)/main_invut : $(OBJDIR)/main_invut.o $(OBJDIR)/matrix.o $(OBJDIR)/cmeasure.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_invut.o : main_invut.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_invut.cc
+
+
+$(OBJDIR)/main_Ax : $(OBJDIR)/main_Ax.o $(OBJDIR)/matrix.o $(OBJDIR)/double_vec_ops.o $(OBJDIR)/cmeasure.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_Ax.o : main_Ax.cc matrix.hh double_vec_ops.hh cmeasure.h 
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_Ax.cc
+
+$(OBJDIR)/main_multmatvec1 : $(OBJDIR)/main_multmatvec1.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec1.o : main_multmatvec1.cc matrix.hh 
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec1.cc
+
+$(OBJDIR)/main_multmatvec2 : $(OBJDIR)/main_multmatvec2.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec2.o : main_multmatvec2.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec2.cc
+
+$(OBJDIR)/main_multmatvec3 : $(OBJDIR)/main_multmatvec3.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec3.o : main_multmatvec3.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec3.cc
+
+$(OBJDIR)/main_multmatvec4 : $(OBJDIR)/main_multmatvec4.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec4.o : main_multmatvec4.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec4.cc
+
+$(OBJDIR)/main_multmatvec5 : $(OBJDIR)/main_multmatvec5.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec5.o : main_multmatvec5.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec5.cc
+
+$(OBJDIR)/main_multmatvec6 : $(OBJDIR)/main_multmatvec6.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec6.o : main_multmatvec6.cc matrix.hh
+	$(CC) $(CFAVX) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec6.cc
+
+
+$(OBJDIR)/main_random_string : $(OBJDIR)/main_random_string.o $(OBJDIR)/random_string.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_random_string.o : main_random_string.cc random_string.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_random_string.cc
+
+$(OBJDIR)/main_prime : $(OBJDIR)/main_prime.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_prime.o : main_prime.cc
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_prime.cc
+
+$(OBJDIR)/main_system : $(OBJDIR)/main_system.o $(OBJDIR)/system.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_system.o : main_system.cc system.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_system.cc
+
+$(OBJDIR)/main_uval : $(OBJDIR)/main_uval.o 
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_uval.o : main_uval.cc uval.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_uval.cc
+
+$(OBJDIR)/main_tabhash : $(OBJDIR)/main_tabhash.o 
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_tabhash.o : main_tabhash.cc TabulationHash.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_tabhash.cc
+
+$(OBJDIR)/main_chisquare : $(OBJDIR)/main_chisquare.o $(OBJDIR)/chisquare.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_chisquare.o : main_chisquare.cc chisquare.hh matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_chisquare.cc
+
+
+$(OBJDIR)/main_pdep : $(OBJDIR)/main_pdep.o 
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_pdep.o : main_pdep.cc bit_intrinsics.hh
+	$(CC) $(CFLAGS) -mbmi2 $(CINCL) -c -o $@ main_pdep.cc
+
+
+
+$(OBJDIR)/main_mod_mersenne : main_mod_mersenne.cc tmath.hh measure.hh
+	$(CC) $(CFLAGS) $(CINCL) -o $@ main_mod_mersenne.cc
+
+$(OBJDIR)/cmeasure.o : cmeasure.c cmeasure.h
+	gcc -O3 -c -std=c99 -fPIC -o $@ cmeasure.c
+
+$(OBJDIR)/cbind_to_hw_thread.o : cbind_to_hw_thread.c cbind_to_hw_thread.h
+	gcc -O3 -c $(CINCL) -o $@ cbind_to_hw_thread.c
+
+$(OBJDIR)/cstring_hash.o : cstring_hash.c cstring_hash.h
+	gcc -O3 -c -Wall $(CINCL) -std=c99 -o $@ cstring_hash.c
+
+$(OBJDIR)/get_device_model : get_device_model.c
+	gcc -O2 -Wall -o $@ $^
+
+$(OBJDIR)/main_rankperm : main_rankperm.cc rank_permutation.hh
+	g++ -O3 -Wall -o $@ main_rankperm.cc
+
+# SPECIAL NEEDS MOSEK
+
+# SPECIAL NEEDS MOSEK
+$(OBJDIR)/mosekenv.o : mosekenv.cc mosekenv.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -I${MOSEKINCL} -o $@ mosekenv.cc
+
+
+# SPECIAL NEEDS SIMD
+
+$(OBJDIR)/gmstrstr16.o : gmstrstr16.cc gmstrstr16.hh
+	$(ICPC) $(ICPC_COMPATIBILITY_FLAG)  $(CFLAGS)  $(CINCL) $(CFSSE) -c -o $@ gmstrstr16.cc
+
+$(OBJDIR)/gmstrstr16_42.o : gmstrstr16_42.cc gmstrstr16_42.hh
+	$(ICPC)  $(ICPC_COMPATIBILITY_FLAG) $(CFLAGS) $(CINCL) $(CFSSE)  -c -o $@ gmstrstr16_42.cc
+
+
+$(OBJDIR)/matrix.o : matrix.cc matrix.hh  vp_ops.hh
+	$(CC) $(CFLAGS) $(CFSIMD) $(CINCL) -c -o $@ matrix.cc
+
+# GENERAL
+
+$(OBJDIR)/%.o : %.cc %.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ $*.cc
+
+
+# PHONY
+
+.PHONY: odi
+
+odi:
+	make ODI=XXX
+
+.PHONY: clean_odi
+
+clean_odi:
+	make clean ODI=xxx
+
+.PHONY: clean
+
+clean :
+	cd $(OBJDIR); rm -f *.o *.gch a.out $(ALL)
+
+
+
+include ${HOME}/src/fin.mk
+
+

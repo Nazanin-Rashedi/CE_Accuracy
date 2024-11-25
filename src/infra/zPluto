@@ -1,0 +1,41 @@
+     hostname: pluto
+      machine: x86_64
+       osname: Linux
+    osrelease: 4.8.4-1-ARCH
+    osversion: #1 SMP PREEMPT Sat Oct 22 18:26:57 CEST 2016
+   endianness: little endian
+   domainname: (none)
+       no cpu: 2
+     no cores: 24
+   no threads: 24
+       vendor: Intel
+   clockticks: 1217480000
+    cycle[ns]: 0.821369
+    total ram: 270359601152
+     pagesize: 4096
+cpu info:
+   0  Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz   2.6
+   1  Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz   2.6
+cpu/core/thread topology:
+   0 [0 [ 0 ]] [1 [ 1 ]] [2 [ 2 ]] [3 [ 3 ]] [4 [ 4 ]] [5 [ 5 ]] [0 [ ]] [0 [ ]] [8 [ 6 ]] [9 [ 7 ]] [10 [ 8 ]] [11 [ 9 ]] [12 [ 10 ]] [13 [ 11 ]] 
+   1 [0 [ 12 ]] [1 [ 13 ]] [2 [ 14 ]] [3 [ 15 ]] [4 [ 16 ]] [5 [ 17 ]] [0 [ ]] [0 [ ]] [8 [ 18 ]] [9 [ 19 ]] [10 [ 20 ]] [11 [ 21 ]] [12 [ 22 ]] [13 [ 23 ]] 
+cache info: 
+   0 : L1 32K Data  L1 32K Instruction  L2 256K Unified  L3 30720K Unified  
+   1 : L1 32K Data  L1 32K Instruction  L2 256K Unified  L3 30720K Unified  
+
+
+sysinfo: 
+total  ram: 270359601152
+free   ram: 255468167168
+
+cpuid: 
+cpuid     max: 15
+cpuid ext max: 0
+      sig: 0.0.0.0
+ vendor: Intel
+Stepping: 2
+   Model: 15
+  Family: 6
+    Type: 0
+  XModel: 3
+ XFamily: 0

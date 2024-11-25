@@ -1,0 +1,571 @@
+#include <iostream>
+#include <iomanip>
+#include <inttypes.h>
+#include <string>
+#include <random>
+#include <vector>
+#include <assert.h>
+
+#include "../infra/bitvectorsmall.hh"
+#include "../infra/measure.hh"
+#include "../infra/aggregate.hh"
+
+// #include <x86intrin.h>
+#include "immintrin.h"
+
+#include "ZCurve.hh"
+
+/*
+ *
+ * compile with
+ * g++  -std=c++11 -mbmi2 main_zcurve.cc 
+ */
+
+void
+test0() {
+  uint32_t A = (uint32_t) 0x5555555555555555LL;
+  uint32_t B = (uint32_t) 0xAAAAAAAAAAAAAAAALL;
+
+  Bitvector32 lBvA(A);
+  std::cout << "A = ";
+  lBvA.print(std::cout);
+  std::cout << std::endl;
+
+  Bitvector32 lBvB(B);
+  std::cout << "B = ";
+  lBvB.print(std::cout);
+  std::cout << std::endl;
+
+ 
+  uint32_t a = 0xF;
+  uint32_t r = _pdep_u32(a, A);
+  // uint32_t r = __builtin_ia32_pdep_si(a, A);
+
+  std::cout << "r = " << Bitvector32(r) << std::endl; 
+}
+
+void
+test1() {
+
+  ZCurve<uint32_t> lZCurve(4);
+
+  uint32_t i1 = 0;
+  uint32_t j1 = 0;
+  for(uint32_t i = 0; i < 8; ++i) {
+    for(uint32_t j = 0; j < 8; ++j) {
+      const uint32_t d = lZCurve.xy2d(i,j);
+      lZCurve.d2xy(d, i1, j1);
+      std::cout << i << ' ' << j << ' ' << std::setw(2) << d << ' ' 
+                << i1 << ' ' << j1 << ' '
+                << Bitvector16(i) << ' ' << Bitvector16(j) << ' ' << Bitvector16(d) << ' '
+                << std::endl;
+    }
+  }
+}
+
+
+int
+test2(const uint32_t n) {
+  ZCurve<uint32_t> lZCurve(n);
+  uint32_t ir = 0;
+  uint32_t jr = 0;
+  uint64_t lCountBad = 0;
+  const uint32_t lMax = (1 << n);
+  Measure lMeasure;
+  lMeasure.start();
+  for(uint32_t i = 0; i < lMax; ++i) {
+    for(uint32_t j = 0; j < lMax; ++j) {
+      const uint32_t d = lZCurve.xy2d(i,j);
+      lZCurve.d2xy(d, ir, jr);
+      if(ir != i || jr != j) {
+        ++lCountBad;
+      }
+    }
+  }
+  lMeasure.stop();
+  std::cout << std::setw(2) << n << "  "
+            << std::setw(8) << lMax << std::setw(4) << lCountBad << "  "
+            << "cpu = " << ((lMeasure.mCpuTime() / ((double) lMax * (double) lMax)) * (double) (1000 * 1000 * 1000)) 
+            << std::endl;
+  return lCountBad;
+}
+
+void
+test3() {
+  for(uint n = 1; n < 10; ++n) {
+    test2(n);
+  }
+}
+
+void
+fPrintMatrix(const uint32_t aNoBits) {
+  const uint n = (1 << aNoBits);
+  ZCurve<uint32_t> lZCurve(n);
+
+  std::cout << "    ";
+  for(uint32_t i = 0; i < n; ++i) {
+     std::cout << std::setw(4) << i << ' ';
+  }
+  std::cout << std::endl;
+
+  for(uint32_t i = 0; i < n; ++i) {
+    std::cout << std::setw(2) << i << "  ";
+    for(uint32_t j = 0; j < n; ++j) {
+      const uint32_t d = lZCurve.xy2d(i,j);
+      std::cout << std::setw(4) << d << ' ';
+    }
+    std::cout << std::endl;
+  }
+}
+
+inline uint32_t mkLeft (const uint32_t aHi, const uint32_t aBit) { return (aHi & ~(aBit)); }
+inline uint32_t mkRight(const uint32_t aLo, const uint32_t aBit) { return (aLo |  (aBit)); }
+
+uint32_t
+fLeftRight(uint32_t aLo, uint32_t aHi, uint32_t aLevel, const uint32_t n, uint32_t& aCount, const bool aTrace) {
+   if(0 == aLevel) {
+     return 0;
+   }
+   const uint32_t lLeft  = (aLo + aHi - 1) / 2;  // original proposal Orenstein, might produce overflow
+   const uint32_t lRight = (aLo + aHi + 1) / 2;  // original proposal Orenstein, might produce overflow
+   const uint32_t lTheBit = ZCurve<uint32_t>::mkBit(aLevel); //   (1 << aLevel);
+   const uint32_t lLeftB  = ZCurve<uint32_t>::mkLeft(aHi, lTheBit);  // (aHi & ~(lTheBit)); // alternative
+   const uint32_t lRightB = ZCurve<uint32_t>::mkRight(aLo, lTheBit); // (aLo | (lTheBit));  // alternative
+   const bool lBad = ((lLeft != lLeftB) || (lRight != lRightB));
+   uint32_t lNoBad = 0;
+   if(lBad) {
+     ++lNoBad;
+     std::cout << "BAD n = " << n << ", lev = " << aLevel << std::endl;
+   }
+   if(aTrace || lBad) {
+     std::cout << std::setw(4) << aCount << ' ' << std::setw(2) << aLo << ' ' << std::setw(2) << aHi << ' '
+               << std::endl
+               << "      lo " << Bitvector32(aLo)            << std::endl
+               << "      hi " << Bitvector32(aHi)            << std::endl
+               << "    left " << Bitvector32(lLeft)  << "  " << Bitvector32(lLeftB)  << "   " << lLeft  << std::endl
+               << "   right " << Bitvector32(lRight) << "  " << Bitvector32(lRightB) << "   " << lRight << std::endl
+               << std::endl;
+  }
+  ++aCount;
+  lNoBad += fLeftRight(aLo, lLeft, aLevel - 1, n, aCount, aTrace);
+  ++aCount;
+  lNoBad += fLeftRight(lRight, aHi, aLevel - 1, n, aCount, aTrace);
+  return lNoBad;
+}
+
+
+void
+test4() {
+  uint32_t lLo = 0;
+  uint32_t lHi = (1 << 4) - 1;
+  uint32_t lCount = 0;
+  fLeftRight(lLo, lHi, 3, 4, lCount, true);
+  std::cout << std::endl;
+  std::cout << "=== TEST 4 === big:" << std::endl;
+  for(uint n = 2; n < 18; ++n) {
+    lCount = 0;
+    lHi = (32 == n) ? ~0x0 : ((1 << n) - 1);
+    const uint32_t lNoBad = fLeftRight(lLo, lHi, n - 1, n, lCount, false);
+    std::cout << std::setw(2) << n << ' ' << std::setw(3) << lNoBad << std::endl;
+  }
+  std::cout << "=== END TEST 4 ===" << std::endl;
+}
+  
+struct lohi_t {
+  uint32_t  lo;
+  uint32_t  hi;
+
+  lohi_t() : lo(0), hi(0) {}
+  lohi_t(const uint32_t aLo, const uint32_t aHi) : lo(aLo), hi(aHi) {}
+};
+
+std::ostream&
+operator<<(std::ostream& os, const lohi_t& x) {
+  os << '[' << x.lo << ',' << x.hi << ']';
+  return os;
+}
+
+struct zrecdesc_t {
+  lohi_t   d;
+  uint32_t xlo;
+  uint32_t ylo;
+  uint32_t xhi;
+  uint32_t yhi;
+
+  zrecdesc_t(const uint32_t aXlo, const uint32_t aYlo, 
+             const uint32_t aXhi, const uint32_t aYhi, 
+             const uint32_t aNoBits) 
+            : d(),
+              xlo(aXlo), ylo(aYlo), xhi(aXhi), yhi(aYhi) {
+    ZCurve<uint32_t> lZCurve(aNoBits);
+    d.lo = lZCurve.xy2d(aXlo, aYlo);
+    d.hi = lZCurve.xy2d(aXhi, aYhi);
+  }
+
+  zrecdesc_t(const lohi_t& aLohi, const uint32_t aNoBits) : d(aLohi), xlo(), ylo(), xhi(), yhi() {
+    ZCurve<uint32_t> lZCurve(aNoBits);
+    lZCurve.d2xy(d.lo, xlo, ylo);
+    lZCurve.d2xy(d.hi, xhi, yhi);
+  }
+
+  zrecdesc_t(const uint32_t aDlo, const uint32_t aDhi, const uint32_t aNoBits) : d(aDlo, aDhi), xlo(), ylo(), xhi(), yhi() {
+    ZCurve<uint32_t> lZCurve(aNoBits);
+    lZCurve.d2xy(d.lo, xlo, ylo);
+    lZCurve.d2xy(d.hi, xhi, yhi);
+  }
+
+};
+
+std::ostream&
+operator<<(std::ostream& os, const zrecdesc_t& x) {
+  os << '[' 
+     << x.xlo << ',' << x.ylo << ':' << x.xhi << ',' << x.yhi << ';'
+     << x.d.lo << ',' << x.d.hi
+     << ']';
+  return os;
+}
+
+
+typedef std::vector<bool> bool_vt;
+
+void
+reset(bool_vt& x) {
+  for(auto y : x) {
+    y = false;
+  }
+}
+
+void
+print(const bool_vt& x) {
+  for(auto y : x) {
+    std::cout << y;
+  }
+}
+
+// aNoBits = number of bits per direction
+// initial call with aLevel = 2 * aNoBits - 1
+uint32_t
+fListAbschnitte(const zrecdesc_t& aQueryRectangle,
+                const lohi_t&     aAbschnitt,
+                const uint32_t    aLevel,
+                const uint32_t    aNoBits, 
+                const uint32_t    aIndent,
+                const bool        aTrace,
+                      bool_vt&    aVecR) {
+  const uint32_t n = (1 << aNoBits);
+
+  if(aTrace) {
+    std::cout << "fla B = " << aNoBits << " L = " << aLevel 
+              << " n = " << n
+              << std::endl;
+  }
+
+  uint32_t lCount = 1;
+  if(aQueryRectangle.d.hi < aAbschnitt.lo) {
+    // empty a
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : empty a"
+                << std::endl;
+    }
+    return lCount;
+  } 
+  if(aAbschnitt.hi < aQueryRectangle.d.lo) {
+    // empty b
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : empty b"
+                << std::endl;
+    }
+    return lCount;
+  }
+
+  // still everything possible
+  uint32_t lXlo = 0;
+  uint32_t lYlo = 0;
+  uint32_t lXhi = 0;
+  uint32_t lYhi = 0;
+  ZCurve<uint32_t> lZCurve(aNoBits);
+  lZCurve.d2xy(aAbschnitt.lo, lXlo, lYlo);
+  lZCurve.d2xy(aAbschnitt.hi, lXhi, lYhi);
+
+  if(aTrace) {
+    std::cout << "xlo = " << lXlo << ", "
+              << "ylo = " << lYlo << ", "
+              << "xhi = " << lXhi << ", "
+              << "yhi = " << lYhi;
+  }
+
+  if(lXhi < aQueryRectangle.xlo) {
+    // empty c
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : empty c"
+                << std::endl;
+    } 
+    return lCount;
+  }
+
+  if(lYhi < aQueryRectangle.ylo) {
+    // empty d
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : empty d"
+                << std::endl;
+    } 
+    return lCount;
+  }
+
+  if(lXlo > aQueryRectangle.xhi) {
+    // empty e
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : empty e"
+                << std::endl;
+    } 
+    return lCount;
+  }
+
+  if(lYlo > aQueryRectangle.yhi) {
+    // empty f
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : empty f"
+                << std::endl;
+    } 
+    return lCount;
+  }
+
+
+  const bool lContained = ((aQueryRectangle.xlo <= lXlo) && (aQueryRectangle.ylo <= lYlo) &&
+                           (lXhi <= aQueryRectangle.xhi) && (lYhi <= aQueryRectangle.yhi));
+ 
+  if(aTrace) { 
+    std::cout << ": contained = " << lContained << std::endl; 
+  }
+
+  if(lContained) {
+    // containment a \subseteq q
+    ++lCount;
+    for(uint32_t i = aAbschnitt.lo; i <= aAbschnitt.hi; ++i) {
+      aVecR[i] = true;
+    }
+    if(aTrace) {
+      std::cout << std::string(aIndent, ' ')
+                << "q " << aQueryRectangle << " a " << aAbschnitt 
+                << " : containment"
+                << std::endl;
+    }
+    return lCount;
+  }
+
+  // overlapping
+  const uint32_t lTheBit = (1 << aLevel);
+  const uint32_t lLeft  = mkLeft(aAbschnitt.hi, lTheBit);  // (aHi & ~(lTheBit)); // alternative
+  const uint32_t lRight = mkRight(aAbschnitt.lo, lTheBit); // (aLo | (lTheBit));  // alternative
+  lohi_t lAbschnittLeft (aAbschnitt.lo, lLeft);
+  lohi_t lAbschnittRight(lRight, aAbschnitt.hi);
+    
+  if(aTrace) {
+    std::cout << std::string(aIndent, ' ')
+              << "q " << aQueryRectangle << " a " << aAbschnitt 
+              << " : overlapping"
+              << std::endl;
+  }
+
+  lCount += fListAbschnitte(aQueryRectangle, lAbschnittLeft,  aLevel - 1, aNoBits, aIndent + 3, aTrace, aVecR);
+  lCount += fListAbschnitte(aQueryRectangle, lAbschnittRight, aLevel - 1, aNoBits, aIndent + 3, aTrace, aVecR);
+  return lCount;
+}
+
+
+
+// aNoBits is number of bits per x value, which equals the number of bits per y value
+void
+test5(const uint32_t aNoBits, const uint32_t aNo, bool aTrace) {
+  assert(1 <= aNoBits && 16 >= aNoBits);
+  const uint32_t n = (1 << aNoBits); // number of x values, equals number of y values
+  const uint32_t lMaxD = (n*n) - 1; // maximum value of z-curve
+  lohi_t     lAbschnittInitial(0, lMaxD);
+
+  std::cout << "=== TEST 5 ===" << std::endl;
+  std::cout << "aNoBits = " << aNoBits
+            << ", n = " << n
+            << ", n*n = " << (n*n)
+            << ", a = " << lAbschnittInitial
+            << std::endl;
+
+  std::mt19937  lRng;
+
+  bool_vt lVecQ(n*n); // vector for query rectangle
+  bool_vt lVecR(n*n); // vector for results
+
+  ZCurve<uint32_t> lZCurve(aNoBits);
+
+  for(uint i = 0; i < aNo; ++i) {
+    const uint32_t lXlo = (lRng() % n);
+    const uint32_t lXhi = (lXlo + (lRng() % (n - lXlo)));
+    const uint32_t lYlo = (lRng() % n);
+    const uint32_t lYhi = (lYlo + (lRng() % (n - lYlo)));
+
+    zrecdesc_t lQueryRectangle(lXlo, lYlo, lXhi, lYhi, aNoBits);
+
+    if(aTrace) {
+      std::cout << "n = " << n << ", qr = " << lQueryRectangle << std::endl;
+    }
+
+    reset(lVecR);
+
+    const uint32_t lCount = fListAbschnitte(lQueryRectangle, lAbschnittInitial, 2 * aNoBits - 1, aNoBits, 3, aTrace, lVecR);
+    if(aTrace) {
+      std::cout << "n = " << n << ", i = " << i << ", cnt = " << std::setw(4) << lCount << std::endl;
+      std::cout << std::endl;
+    }
+
+    reset(lVecQ);
+    for(uint32_t i = lXlo; i <= lXhi; ++i) {
+      for(uint32_t j = lYlo; j <= lYhi; ++j) {
+        lVecQ[lZCurve.xy2d(i,j)] = true;
+      }
+    }
+
+    if(lVecQ != lVecR) {
+      std::cout << "BAD: " 
+                << "n = " << n << ", qr = " << lQueryRectangle 
+                << std::endl;
+      print(lVecQ);
+      std::cout << std::endl;
+      print(lVecR);
+      std::cout << std::endl;
+    } else {
+      if(aTrace && n < 5) {
+        std::cout << "GOOD: " << std::endl;
+        print(lVecQ);
+        std::cout << std::endl;
+        print(lVecR);
+        std::cout << std::endl;
+      }
+    }
+  }
+  std::cout << "=== ==== = ===" << std::endl;
+}
+
+// aNoBits is number of bits per x value, which equals the number of bits per y value
+void
+test6(const uint32_t aNoBits, bool aTrace) {
+  assert(1 <= aNoBits && 16 >= aNoBits);
+  const uint32_t n = (1 << aNoBits); // number of x values, equals number of y values
+  const uint32_t lMaxD = ((n*n) - 1);
+  lohi_t     lAbschnittInitial(0, lMaxD);
+
+  std::cout << "=== TEST 6 ===" << std::endl;
+  std::cout << "aNoBits = " << aNoBits
+            << ", n = " << n
+            << ", n*n = " << (n*n)
+            << std::endl;
+
+  bool_vt lVecQ(n*n); // vector for query rectangle
+  bool_vt lVecR(n*n); // vector for results
+
+  ZCurve<uint32_t> lZCurve(aNoBits);
+
+  Aggregate<uint64_t> lAggr;
+  lAggr.init();
+
+  for(uint32_t lXlo = 0; lXlo < n; ++lXlo) {
+  for(uint32_t lXhi = lXlo; lXhi < n; ++lXhi) {
+  for(uint32_t lYlo = 0; lYlo < n; ++lYlo) {
+  for(uint32_t lYhi = lYlo; lYlo < n; ++lYlo) {
+
+    zrecdesc_t lQueryRectangle(lXlo, lYlo, lXhi, lYhi, aNoBits);
+
+    if(aTrace) {
+      std::cout << "n = " << n << ", qr = " << lQueryRectangle << std::endl;
+    }
+
+    reset(lVecR);
+
+    const uint32_t lCount = fListAbschnitte(lQueryRectangle, lAbschnittInitial, 2 * aNoBits - 1, aNoBits, 3, aTrace, lVecR);
+    lAggr.step(lCount);
+
+    if(aTrace) {
+      std::cout << "n = " << n << ", cnt = " << std::setw(4) << lCount << std::endl;
+      std::cout << std::endl;
+    }
+
+    reset(lVecQ);
+    for(uint32_t i = lXlo; i <= lXhi; ++i) {
+      for(uint32_t j = lYlo; j <= lYhi; ++j) {
+        lVecQ[lZCurve.xy2d(i,j)] = true;
+      }
+    }
+
+    if(lVecQ != lVecR) {
+      std::cout << "BAD: " 
+                << "n = " << n << ", qr = " << lQueryRectangle 
+                << std::endl;
+      print(lVecQ);
+      std::cout << std::endl;
+      print(lVecR);
+      std::cout << std::endl;
+    } else {
+      if(aTrace && n < 5) {
+        std::cout << "GOOD: " << std::endl;
+        print(lVecQ);
+        std::cout << std::endl;
+        print(lVecR);
+        std::cout << std::endl;
+      }
+    }
+  }}}}
+
+  lAggr.fin();
+
+  std::cout << "n = " << n << ", "
+            << "lMinVisited = " << lAggr.min()  << ", "
+            << "lMaxVisited = " << lAggr.max()  << ", "
+            << "lAvgVisited = " << lAggr.avg() 
+            << std::endl;
+  std::cout << "=== ==== = ===" << std::endl;
+}
+
+
+
+int
+main() {
+
+  test0();
+  test1();
+  test3();
+  test4();
+  std::cout << std::endl;
+  fPrintMatrix(2);
+  std::cout << std::endl;
+  fPrintMatrix(3);
+  std::cout << std::endl;
+  fPrintMatrix(4);
+  std::cout << std::endl;
+
+
+  test5(2, 8, true);
+  test5(3, 8, true);
+  test5(4, 8, true);
+  test5(5, 8, true);
+
+  test6(2, false);
+  test6(3, false);
+  test6(4, false);
+  test6(5, false);
+  test6(6, false);
+  test6(7, false);
+  test6(8, false);
+
+  return 0;
+}
+

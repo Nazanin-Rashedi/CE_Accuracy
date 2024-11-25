@@ -1,0 +1,183 @@
+include ${HOME}/src/inc.mk
+
+CINCL = -I. -I..
+
+OBJALL = BitvectorLong.o \
+      buckethistogram.o \
+      print_test_header.o \
+      random_string.o \
+      geocoord.o \
+      datejd.o \
+      linereader.o \
+      linereaderWithEdit.o \
+      commandreader.o \
+      temperature.o \
+      timestamp.o \
+      matrix.o \
+      gmsvd.o \
+      StringDictionaryHashed.o \
+      simpleexception.o \
+      simplecharcontainer.o \
+      like.o \
+      unionfind.o \
+      lageparameter.o \
+      stimestamp.o \
+      stime.o \
+      system.o \
+      WaveletTransformNonStd2dim.o \
+
+BINALL = main_system \
+      main_random_string \
+      main_bh \
+      main_multmatvec1 \
+      main_multmatvec2 \
+      main_multmatvec3 \
+      main_multmatvec4 \
+      main_multmatvec5 \
+      main_matrix \
+      main_designmatrix \
+      main_qr \
+
+# special requires SSE, BMI2 etc. (intel only)
+
+NEEDSSIMD = main_multmatvec6 \
+          gmstrstr16.o \
+          gmstrstr16_42.o \
+
+NEEDSMOSEK = mosekenv.o 
+
+ifeq ($(CPUARCH), x86_64)
+ifeq ($(HOST), lu187349)
+ALL = $(OBJALL) $(BINALL) $(NEEDSSIMD) 
+else
+ALL = $(OBJALL) $(BINALL) $(NEEDSSIMD) $(NEEDSMOSEK)
+endif
+else
+ALL = $(OBJALL) $(BINALL)
+endif
+
+
+all : $(ALL)
+	@ echo build for ${CPUARCH}
+
+
+WaveletTransformNonStd2dim.o : WaveletTransformNonStd2dim.cc WaveletTransformNonStd2dim.hh matrix.hh TopK.hh bit_intrinsics.hh
+	$(CC) $(CFLAGS) $(CINCL) -c WaveletTransformNonStd2dim.cc
+
+BitvectorLong.o : BitvectorLong.cc BitvectorLong.hh bitvectorsmall.hh
+	$(CC) $(CFLAGS) $(CINCL) -c BitvectorLong.cc
+
+main_rotmatrix : main_rotmatrix.o matrix.o
+	$(CC) -o main_rotmatrix main_rotmatrix.o matrix.o
+
+main_rotmatrix.o : main_rotmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_rotmatrix.cc
+
+main_qr : main_qr.o matrix.o
+	$(CC) -o main_qr main_qr.o matrix.o
+
+main_qr.o : main_qr.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_qr.cc
+
+main_bh : main_bh.o buckethistogram.o
+	$(CC) -o main_bh main_bh.o buckethistogram.o
+
+main_bh.o : main_bh.cc buckethistogram.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_bh.cc
+
+
+main_designmatrix : main_designmatrix.o gmsvd.o matrix.o
+	$(CC) -o main_designmatrix main_designmatrix.o gmsvd.o matrix.o
+
+main_designmatrix.o : main_designmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_designmatrix.cc
+
+
+
+main_matrix : main_matrix.o matrix.o
+	$(CC) -o main_matrix main_matrix.o matrix.o
+
+main_matrix.o : main_matrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_matrix.cc
+
+
+main_multmatvec1 : main_multmatvec1.o matrix.o
+	$(CC) -o main_multmatvec1 main_multmatvec1.o matrix.o
+
+main_multmatvec1.o : main_multmatvec1.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec1.cc
+
+main_multmatvec2 : main_multmatvec2.o matrix.o
+	$(CC) -o main_multmatvec2 main_multmatvec2.o matrix.o
+
+main_multmatvec2.o : main_multmatvec2.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec2.cc
+
+main_multmatvec3 : main_multmatvec3.o matrix.o
+	$(CC) -o main_multmatvec3 main_multmatvec3.o matrix.o
+
+main_multmatvec3.o : main_multmatvec3.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec3.cc
+
+main_multmatvec4 : main_multmatvec4.o matrix.o
+	$(CC) -o main_multmatvec4 main_multmatvec4.o matrix.o
+
+main_multmatvec4.o : main_multmatvec4.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec4.cc
+
+main_multmatvec5 : main_multmatvec5.o matrix.o
+	$(CC) -o main_multmatvec5 main_multmatvec5.o matrix.o
+
+main_multmatvec5.o : main_multmatvec5.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec5.cc
+
+main_multmatvec6 : main_multmatvec6.o matrix.o
+	$(CC) -o main_multmatvec6 main_multmatvec6.o matrix.o
+
+main_multmatvec6.o : main_multmatvec6.cc matrix.hh
+	$(CC) $(CFSSE) $(CFLAGS) $(CINCL) -c main_multmatvec6.cc
+
+
+main_random_string : main_random_string.o random_string.o
+	$(CC) -o main_random_string main_random_string.o random_string.o
+
+main_random_string.o : main_random_string.cc random_string.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_random_string.cc
+
+main_system : main_system.o system.o
+	$(CC) -o main_system main_system.o system.o
+
+main_system.o : main_system.cc system.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_system.cc
+
+mosekenv.o : mosekenv.cc mosekenv.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -I/opt/mosek/6/tools/platform/linux64x86/h/ mosekenv.cc
+
+gmstrstr16.o : gmstrstr16.cc gmstrstr16.hh
+	$(ICPC)   $(CFLAGS)  $(CINCL) $(CFSSE) -c gmstrstr16.cc
+
+gmstrstr16_42.o : gmstrstr16_42.cc gmstrstr16_42.hh
+	$(ICPC)   $(CFLAGS) $(CINCL) $(CFSSE)  -c gmstrstr16_42.cc
+
+system.o : system.cc system.hh
+	$(CC) $(CFLAGS) $(CINCL) -c system.cc
+
+%.o : %.cc %.hh
+	$(CC) $(CFLAGS) $(CINCL) -c $*.cc
+
+.PHONY: install
+
+install :
+	@ echo copying executables into directory $(OBJDIR)
+	cp $(BINALL) $(OBJDIR)/infra
+
+
+.PHONY: clean
+
+clean :
+	rm -f *.o *.gch a.out $(ALL)
+
+include ${HOME}/src/fin.mk
+
+
+

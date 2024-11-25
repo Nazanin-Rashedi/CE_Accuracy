@@ -1,0 +1,45 @@
+  cpu brand string = Apple M1
+  cpu family = 0x1b588bb3 (458787763)
+  something went wrong getting cpufreq via sysctl: -1
+     hostname: pi3macmini1.informatik.uni-mannheim.de
+      machine: arm64
+       osname: Darwin
+    osrelease: 20.6.0
+    osversion: Darwin Kernel Version 20.6.0: Mon Aug 30 06:12:20 PDT 2021; root:xnu-7195.141.6~3/RELEASE_ARM64_T8101
+   endianness: little endian
+   domainname: 
+       no cpu: 1
+     no cores: 8
+   no threads: 8
+       vendor: ARM
+   clockticks: 0
+    cycle[ns]: inf
+    ram total: 17179869184
+    ram free : 0
+     pagesize: 16384
+  cachline sz: 128
+cpu info:
+   0  Apple M1   0
+cpu/core/thread topology:
+   0 [0 [ 0 ]] [1 [ 1 ]] [2 [ 2 ]] [3 [ 3 ]] [4 [ 4 ]] [5 [ 5 ]] [6 [ 6 ]] [7 [ 7 ]] 
+cache info: 
+   0 : L1 192K Instruction  L1 128K Data  L2 12288K Unified  
+
+
+
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 0 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 1 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 2 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 3 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 4 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 5 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 6 clockticks: 0
+  something went wrong getting cpufreq via sysctl: -1
+hw thread 7 clockticks: 0

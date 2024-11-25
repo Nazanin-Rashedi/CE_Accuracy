@@ -1,0 +1,110 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <vector>
+#include <stdlib.h>
+
+#include <inttypes.h>
+
+bool
+isPrime(const uint64_t x) {
+  uint64_t z = sqrt(x);
+  for(uint64_t i = 2; i <= z; ++i) {
+    if(0 == (x % i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void
+test0() {
+  for(int i = (2 * 3 * 7 * 43) + 1; i < 2000; ++i) {
+    if(isPrime(i)) {
+      std::cout << std::setw(5) << i << std::endl;
+    }
+  }
+}
+
+
+void
+sieb(const uint64_t n, const int64_t aPrintIdx) {
+  uint64_t lNoPrimesEstimate = std::max<uint64_t>(10, (((double) n) / log(((double) n))));
+  std::cout << "~#primes = " << lNoPrimesEstimate << std::endl;
+  std::vector<uint64_t> lPrimes;
+  lPrimes.reserve(lNoPrimesEstimate);
+  lPrimes.push_back(2);
+  lPrimes.push_back(3);
+  lPrimes.push_back(5);
+  lPrimes.push_back(7);
+  lPrimes.push_back(11);
+  lPrimes.push_back(13);
+  lPrimes.push_back(17);
+  lPrimes.push_back(19);
+
+  if(20 < n) {
+    for(uint64_t i = 21; i <= n; i += 2) {
+      uint64_t lFin = (uint64_t) std::floor(std::sqrt((double) i));
+      bool lIsPrime = true;
+      for(uint64_t j = 1; lPrimes[j] <= lFin; ++j) {
+        if(0 == (i % lPrimes[j])) {
+          lIsPrime = false;
+          break;
+        }
+      }
+      if(lIsPrime) {
+        lPrimes.push_back(i);
+      }
+    }
+  }
+  std::cout << "#primes = " << lPrimes.size() << std::endl;
+
+
+  std::cout << "primes(" << n << ',' << aPrintIdx << "):" << std::endl;
+  if(0 == aPrintIdx) {
+    for(uint64_t i = 0; i < lPrimes.size(); ++i) {
+      std::cout << lPrimes[i] << std::endl;
+    }
+  } else
+  if(0 < aPrintIdx) {
+    for(uint64_t i = aPrintIdx; i < lPrimes.size(); ++i) {
+      std::cout << "  " << lPrimes[i] << std::endl;
+    }
+  } else
+  if(0 > aPrintIdx) {
+    for(uint64_t i = lPrimes.size() + aPrintIdx; i < lPrimes.size(); ++i) {
+      std::cout << lPrimes[i] << std::endl;
+    }
+  }
+}
+
+
+
+int
+main(const int argc, const char* argv[]) {
+  char* lCharPtr = 0;
+  if(2 == argc) {
+    // simply check whether argument is a prime number
+    long int p = strtol(argv[1], &lCharPtr, 10);
+    if(argv[1] != lCharPtr) {
+      std::cout << "p = " << p << " is " << (isPrime(p) ? "prime" : "not prime") << '.' << std::endl;
+      while(!isPrime(++p));
+      std::cout << "p = " << p << " is " << (isPrime(p) ? "prime" : "not prime") << '.' << std::endl;
+      return 0; 
+    } else {
+      std::cout << "error while reading argument (must be a number)." << std::endl;
+      return -1;
+    }
+  }
+  
+  test0();
+  sieb(100,  0);
+  sieb(100,  3);
+  sieb(100, -3);
+
+  sieb((1L << 20), -3);
+  sieb((1L << 30), -3);
+  sieb((1L << 33), -3);
+
+}
+

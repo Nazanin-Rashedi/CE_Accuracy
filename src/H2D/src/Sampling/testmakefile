@@ -1,0 +1,78 @@
+include ${SRCBASEDIR}/inc.mk
+
+CINCL = -I. -I.. -I../.. -I../../.. -I../StatView
+vpath %.hh .:..:../..:../../..
+vpath %.cc .:..:../..:../../..
+
+OBJDIR = $(OBJBASEDIR)/H2D/src/Sampling
+vpath .o $(OBJBASEDIR)
+
+LPDIR = ${TOPDIR}/src3/lp_solve/lpsolve55/bin/ux64
+
+HDRINFRA = infra/tmath.hh \
+           infra/q.hh \
+           infra/newton_tt.hh \
+           infra/FukushimaLambertW.hh \
+           infra/glob_infra_standard_includes.hh \
+
+OBJINFRA = $(OBJBASEDIR)/infra/cmeasure.o \
+           $(OBJBASEDIR)/infra/FukushimaLambertW.o \
+
+OBJW = $(SRCBASEDIR)/ConfidenceInterval/WilsonScoreInterval.o \
+       $(SRCBASEDIR)/ConfidenceInterval/WilsonScoreInterval2.o \
+
+
+HDR = SamplingAlphaOmegaNewton.hh \
+
+OFS = SamplingAlphaOmegaNewton.o \
+
+OBJ = $(addprefix $(OBJDIR)/,$(OFS))
+
+OFS1 = SamplingAlphaOmegaNewton.o \
+
+OBJ1 = $(addprefix $(OBJDIR)/,$(OFS1))
+
+
+HDRDB = SamplingDoubleBoundLp.hh \
+
+OBJDB = SamplingDoubleBoundLp.o \
+
+BFS = main_get_alpha_omega \
+
+AFS = $(OFS) $(BFS)
+
+ALL = $(addprefix $(OBJDIR)/,$(AFS))
+
+# ALL
+
+all : $(ALL)
+	@ echo build for ${CPUARCH}
+
+# MAINs
+
+
+
+$(OBJDIR)/main_get_alpha_omega : $(OBJDIR)/main_get_alpha_omega.o $(OBJ1) $(OBJINFRA) 
+	$(CPPC) -o $@ $^ 
+
+
+$(OBJDIR)/SamplingAlphaOmegaNewton.o : SamplingAlphaOmegaNewton.cc
+	$(CPPC) $(CFLAGS) $(CINCL) -c -o $@ SamplingAlphaOmegaNewton.cc
+
+
+
+# GENERAL
+$(OBJDIR)/%.o: %.cc %.hh $(HDRINFRA) 
+	$(CPPC) $(CFLAGS) $(CINCL) $(NATIVE) -c -o $@ $*.cc
+
+# PHONY
+
+
+
+.PHONY: clean
+
+clean : 
+	cd $(OBJDIR); rm -f *.o a.out $(ALL)
+
+include ${SRCBASEDIR}/fin.mk
+

@@ -1,0 +1,135 @@
+#ifndef RESERVOIR_HH
+#define RESERVOIR_HH
+
+#include <vector>
+
+template<class T>
+class Reservoir {
+  public:
+    typedef unsigned int uint;
+    typedef std::vector<T*> chunk_vt;
+  public:
+    class iterator {
+      public:
+        iterator() : _reservoir(0), _curr(0), _chunkend(0), _currchunkno(0), _ok(false) {}
+        iterator(Reservoir<T>* aReservoir, 
+                 T* aCurr, 
+                 T* aChunkEnd,
+                 uint aCurrChunkNo,
+                 bool aOk) : _reservoir(aReservoir), _curr(aCurr), _chunkend(aChunkEnd),
+                             _currchunkno(aCurrChunkNo), _ok(aOk) {}
+      public:
+        inline T* operator*() { return _curr; }
+        inline bool ok() const { return _ok; }
+        void operator++() {
+               ++_curr;
+               if(_chunkend <= _curr) {
+                 ++_currchunkno;
+                 if(_currchunkno < _reservoir->noChunks()) {
+                   _curr = _reservoir->first_of_chunk(_currchunkno);
+                   _chunkend = _reservoir->end_of_chunk(_currchunkno);
+                 } else {
+                   _ok = false;
+                 }
+               }
+             }
+      private:
+        Reservoir<T>* _reservoir;
+        T*   _curr;
+        T*   _chunkend;
+        uint _currchunkno;
+        bool _ok;
+    };
+  public:
+    Reservoir(uint aLog2ChunkSize);
+    ~Reservoir();
+  public:
+    T* get_new_entry(); // without initial T element
+    T* push_back(const T*);
+    const T* operator[](uint i) const { return &(_chunks[idx_chunk(i)][idx_in_chunk(i)]); }
+          T* operator[](uint i)       { return &(_chunks[idx_chunk(i)][idx_in_chunk(i)]); }
+    inline uint cardinality() const { return _cardinality; }
+    inline uint noChunks() const { return _chunks.size(); }
+  public:
+    iterator begin() {
+               return iterator(this,
+                               first_of_chunk(0), 
+                               end_of_chunk(0),
+                               0,
+                               (0 < cardinality()));
+             }
+  public:
+    inline T* first_of_chunk(uint aChunkNo) { return (&(_chunks[aChunkNo][0])); }
+    inline T* end_of_chunk(uint aChunkNo) { if((aChunkNo  + 1) == noChunks()) {
+                                              return (&(_chunks[aChunkNo][_endinchunk]));
+                                            } else {
+                                              return (&(_chunks[aChunkNo][_mask + 1]));
+                                            };
+                                          }
+  private:
+    void allocChunk();
+    inline uint idx_chunk(uint i) const { return (i >> _log2chunksize); }
+    inline uint idx_in_chunk(uint i) const { return (i & _mask); }
+  private:
+    uint _log2chunksize;
+    uint _mask;
+    uint _endinchunk; // first empty entry in last chunk
+    uint _cardinality;
+    chunk_vt _chunks;
+};
+
+
+template<class T>
+Reservoir<T>::Reservoir(uint aLog2ChunkSize) 
+             : _log2chunksize(aLog2ChunkSize), _mask((1 << aLog2ChunkSize) - 1), _endinchunk(0), 
+               _cardinality(0), _chunks() {
+  allocChunk();
+}
+
+template<class T>
+Reservoir<T>::~Reservoir() {
+  for(typename chunk_vt::iterator iter = _chunks.begin(); iter != _chunks.end(); ++iter) {
+    delete[] (*iter);
+  }
+}
+
+template<class T>
+T*
+Reservoir<T>::get_new_entry() {
+  T* lRes = &(_chunks[_chunks.size() - 1][_endinchunk]);
+  ++_cardinality;
+  ++_endinchunk;
+  if(_mask < _endinchunk) {
+    allocChunk();
+  }
+  return lRes;
+}
+
+template<class T>
+T*
+Reservoir<T>::push_back(const T* aT) {
+  T* lRes = get_new_entry();
+  (*lRes) = (*aT);
+  return lRes;
+}
+
+template<class T>
+void
+Reservoir<T>::allocChunk() {
+  T* lChunk = new T[1 << _log2chunksize];
+  _chunks.push_back(lChunk);
+  _endinchunk = 0;
+}
+
+/*
+template<class T>
+Reservoir<T>::iterator
+Reservoir<T>::begin() { 
+  return iterator(this,
+                  first_of_chunk(0), 
+                  end_of_chunk(0),
+                  0,
+                  (0 < cardinality()));
+}
+*/
+#endif

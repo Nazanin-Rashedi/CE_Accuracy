@@ -1,0 +1,15 @@
+=== TEST 6 ===
+aNoBits = 2, n = 4, n*n = 16
+n = 4, lMinVisited = 3, lMaxVisited = 15, lAvgVisited = 6.15
+aNoBits = 3, n = 8, n*n = 64
+n = 8, lMinVisited = 3, lMaxVisited = 29, lAvgVisited = 7.70833
+aNoBits = 4, n = 16, n*n = 256
+n = 16, lMinVisited = 3, lMaxVisited = 57, lAvgVisited = 9.04044
+aNoBits = 5, n = 32, n*n = 1024
+n = 32, lMinVisited = 3, lMaxVisited = 113, lAvgVisited = 10.2377
+aNoBits = 6, n = 64, n*n = 4096
+n = 64, lMinVisited = 3, lMaxVisited = 225, lAvgVisited = 11.3526
+aNoBits = 7, n = 128, n*n = 16384
+n = 128, lMinVisited = 3, lMaxVisited = 449, lAvgVisited = 12.4183
+aNoBits = 8, n = 256, n*n = 65536
+n = 256, lMinVisited = 3, lMaxVisited = 897, lAvgVisited = 13.4552

@@ -1,0 +1,35 @@
+include ${SRCBASEDIR}/inc.mk
+H2DIR  = $(OBJBASEDIR)/H2D/src
+OBJDIR = $(OBJBASEDIR)/H2D/src/EstimatorArea
+
+vpath .o $(OBJDIR):$(OBJBASEDIR)
+
+
+INCL = -I.. -I../.. -I../../..
+
+VPATH = .:..:../..:../../..
+
+
+HDRINFRA = infra/types.hh \
+           infra/data2dim.hh \
+           infra/summaryline.hh \
+           infra/EstimatorBase.hh \
+
+OFS = EstimatorArea.o 
+AFS = $(OFS)
+ALL = $(addprefix $(OBJDIR)/, $(AFS))
+
+all : $(ALL)
+
+
+$(OBJDIR)/EstimatorArea.o : EstimatorArea.cc EstimatorArea.hh $(HDRINFRA)
+	$(CC) -c $(CFLAGS) $(INCL) -o $@ EstimatorArea.cc
+
+
+
+clean :
+	cd $(OBJDIR)
+	rm -f *.o a.out $(ALL)
+
+
+include ${SRCBASEDIR}/fin.mk

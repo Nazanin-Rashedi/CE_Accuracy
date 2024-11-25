@@ -1,0 +1,657 @@
+#include "matrix.hh"
+
+Matrix::Matrix() : _noRows(0), _noCols(0), _m(0) {}
+
+Matrix::Matrix(uint n, uint m) : _noRows(n), _noCols(m), _m(0) {
+  _m = new double[n*m];
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = 0.0;
+    }
+  }
+}
+
+Matrix::Matrix(uint n, uint m, double a11 ...) : _noRows(n), _noCols(m), _m(0) {
+  _m = new double[n*m];
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = 0.0;
+    }
+  }
+  va_list ap;
+  va_start(ap, a11);
+  (*this)(0,0) = a11;
+  for(uint j = 1; j < m; ++j) {
+     (*this)(0,j) = va_arg(ap,double);
+  }
+  std::cout << std::endl;
+  for(uint i = 1; i < n; ++i) {
+    for(uint j = 0; j < m; ++j) {
+      (*this)(i,j) = va_arg(ap,double);
+    }
+  }
+  va_end(ap);
+}
+
+Matrix::Matrix(const Matrix& m) : _noRows(m.noRows()), _noCols(m.noCols()), _m(0) {
+  _m = new double[noRows()*noCols()];
+  assign(m);
+}
+
+
+Matrix::~Matrix() {
+  if(0 != _m) {
+    delete[] _m;
+    _m = 0;
+  }
+}
+
+Matrix&
+Matrix::operator=(const Matrix& m) {
+  rescale(m.noRows(), m.noCols());
+  assign(m);
+  return (*this);
+}
+
+void
+Matrix::setToSumOf(const Matrix& m1, const Matrix& m2) {
+  if(m1.noRows() != m2.noRows() || m1.noCols() != m2.noCols()) {
+    error("incompatible dimensions");
+  }
+  rescale(m1.noRows(), m1.noCols());
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = m1(i,j) + m2(i,j);
+    }
+  }
+}
+
+void
+Matrix::setToDifferenceOf(const Matrix& m1, const Matrix& m2) {
+  if(m1.noRows() != m2.noRows() || m1.noCols() != m2.noCols()) {
+    error("incompatible dimensions");
+  }
+  rescale(m1.noRows(), m1.noCols());
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = m1(i,j) - m2(i,j);
+    }
+  }
+}
+
+void
+Matrix::setToProductOf(const Matrix& m1, const Matrix& m2) {
+  if(m1.noCols() != m2.noRows()) {
+    error("incompatible dimensions");
+  }
+  rescale(m1.noRows(), m2.noCols());
+  for(uint i = 0; i < m1.noRows(); ++i) {
+    for(uint j = 0; j < m2.noCols(); ++j) {
+      double x = 0.0;
+      for(uint k = 0; k < m1.noCols(); ++k) {
+        x += m1(i,k) * m2(k,j);
+      }
+      (*this)(i,j) = x;
+    }
+  }
+}
+
+void
+Matrix::setToProductWithDiagAsVector(const Matrix& A, const double* v) {
+  rescale(A.noRows(), A.noCols());
+  for(uint i = 0; i < A.noRows(); ++i) {
+    for(uint j = 0; j < A.noCols(); ++j) {
+      (*this)(i,j) = A(i,j) * v[j];
+    }
+  }
+}
+
+void
+Matrix::setToProductWithDiagAsVector(const double* v, const Matrix& A) {
+  rescale(A.noRows(), A.noCols());
+  for(uint i = 0; i < A.noRows(); ++i) {
+    for(uint j = 0; j < A.noCols(); ++j) {
+      (*this)(i,j) = v[i] * A(i,j);
+    }
+  }
+}
+
+void
+Matrix::setToProductOfWithFirstTransposed(const Matrix& m1, const Matrix& m2) {
+  if(m1.noRows() != m2.noRows()) {
+    error("incompatible dimensions");
+  }
+  rescale(m1.noCols(), m2.noCols());
+  for(uint i = 0; i < m1.noCols(); ++i) {
+    for(uint j = 0; j < m2.noCols(); ++j) {
+      double x = 0.0;
+      for(uint k = 0; k < m1.noRows(); ++k) {
+        x += m1(k,i) * m2(k,j);
+      }
+      (*this)(i,j) = x;
+    }
+  }
+}
+
+
+void
+Matrix::setAllTo(double x) {
+  for(uint i = 0; i < noRows(); ++i)
+  for(uint j = 0; j < noCols(); ++j) {
+    (*this)(i,j) = x;
+  }
+}
+
+void
+Matrix::setAllTo(double x, uint aRowStart, uint aRowEnd, uint aColStart, uint aColEnd) {
+for(uint i = aRowStart; i < aRowEnd; ++i)
+  for(uint j = aColStart; j < aColEnd; ++j) {
+    (*this)(i,j) = x;
+  }
+}
+
+void
+Matrix::setZeroSmallerThan(const double eps) {
+  for(uint i = 0; i < noRows(); ++i)
+  for(uint j = 0; j < noCols(); ++j) {
+    const double x = (*this)(i,j);
+    if(-eps < x && x < eps) {
+      (*this)(i,j) = 0.0;
+    }
+  }
+}
+
+
+void
+Matrix::divideAllBy(double x) {
+  for(uint i = 0; i < noRows(); ++i)
+  for(uint j = 0; j < noCols(); ++j) {
+    (*this)(i,j) /= x;
+  }
+}
+
+void
+Matrix::divideAllBy(double x, uint aRowStart, uint aRowEnd, uint aColStart, uint aColEnd) {
+for(uint i = aRowStart; i < aRowEnd; ++i)
+  for(uint j = aColStart; j < aColEnd; ++j) {
+    (*this)(i,j) /= x;
+  }
+}
+
+void
+Matrix::rowNormalize() {
+  for(uint i = 0; i < noRows(); ++i) {
+    double x = 0.0;
+    for(uint j = 0; j < noCols(); ++j) {
+      x += (*this)(i,j);
+    }
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) /= x;
+    }
+  }
+}
+
+void
+Matrix::colNormalize() {
+  for(uint j = 0; j < noCols(); ++j) {
+    double x = 0.0;
+    for(uint i = 0; i < noRows(); ++i) {
+      x += (*this)(i,j);
+    }
+    if(0.0 != x) {
+      for(uint i = 0; i < noRows(); ++i) {
+        (*this)(i,j) /= x;
+      }
+    }
+  }
+}
+
+void
+Matrix::setToRowSubmatrix(const Matrix& m, const uint* aRows, uint aNoRows) {
+  rescale(aNoRows, m.noCols());
+  for(uint i = 0; i < aNoRows; ++i) {
+    for(uint j = 0; j < m.noCols(); ++j) {
+      (*this)(i,j) = m(aRows[i],j);
+    }
+  }
+}
+
+
+void
+Matrix::setToElementWiseProduct(const Matrix& m1, const Matrix& m2) {
+  if(m1.noRows() != m2.noRows() || m1.noCols() != m2.noCols()) {
+    error("incompatible dimensions");
+  }
+  rescale(m1.noRows(), m1.noCols());
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = m1(i,j) * m2(i,j);
+    }
+  }
+}
+
+void
+Matrix::setToElementWiseQuotient(const Matrix& m1, const Matrix& m2) {
+  if(m1.noRows() != m2.noRows() || m1.noCols() != m2.noCols()) {
+    error("incompatible dimensions");
+  }
+  rescale(m1.noRows(), m1.noCols());
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = m1(i,j) / m2(i,j);
+    }
+  }
+}
+
+int
+Matrix::countZeroElements() const {
+  int lRes = 0;
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      if(0 == (*this)(i,j)) {
+        ++lRes;
+      }
+    }
+  }
+  return lRes;
+}
+
+int
+Matrix::countNonZeroElements() const {
+  return ((noRows() * noCols()) - countZeroElements());
+}
+
+double
+Matrix::sumAllElements() const {
+  double lRes = 0.0;
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      lRes += (*this)(i,j);
+    }
+  }
+  return lRes;
+}
+
+double
+Matrix::sumAllElements(uint aRowStart, uint aRowEnd, uint aColStart, uint aColEnd) const {
+  double lRes = 0.0;
+  for(uint i = aRowStart; i < aRowEnd; ++i) {
+    for(uint j = aColStart; j < aColEnd; ++j) {
+      lRes += (*this)(i,j);
+    }
+  }
+  return lRes;
+}
+
+void
+Matrix::rescale(uint n, uint m) {
+  if(0 == n || 0 == m) {
+    std::cerr << "Matrix::rescale: n=0, m=0." << std::endl;
+    exit(-1);
+  }
+  if(0 == _m) {
+    _m = new double[n*m];
+  } else {
+    if(noRows() != n || noCols() != m) {
+      if(0 != _m) {
+        delete[] _m;
+      }
+      _m = 0;
+      _m = new double[n*m];
+    }
+  }
+  _noRows = n;
+  _noCols = m;
+  setNull();
+}
+
+void
+Matrix::setNull() {
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = 0.0;
+    }
+  }
+}
+
+double
+Matrix::vecDotProd(const double* v1, const double* v2, const uint n) {
+  double lRes = 0.0;
+  for(uint i = 0; i < n; ++i) {
+    lRes += v1[i] * v2[i];
+  }
+  return lRes;
+}
+
+double
+Matrix::colColDotProd(const uint c1, const uint c2) const {
+  double lRes = 0.0;
+  for(uint i = 0; i < noRows(); ++i) {
+    lRes += (*this)(i, c1) * (*this)(i, c2);
+  }
+  return lRes;
+}
+
+double
+Matrix::rowRowDotProd(const uint r1, const uint r2) const {
+  double lRes = 0.0;
+  for(uint i = 0; i < noCols(); ++i) {
+    lRes += (*this)(r1, i) * (*this)(r2, i);
+  }
+  return lRes;
+}
+
+double
+Matrix::colRowDotProd(const uint aRow, const uint aCol) const {
+  double lRes = 0.0;
+  for(uint i = 0; i < noCols(); ++i) {
+    lRes += (*this)(aRow, i) * (*this)(i, aCol);
+  }
+  return lRes;
+}
+
+double
+Matrix::colVecDotProd(const double* v, const uint aColNo) const {
+  double lRes = 0.0;
+  for(uint i = 0; i < noRows(); ++i) {
+    lRes += v[i] * (*this)(i,aColNo);
+  }
+  return lRes;
+}
+
+double
+Matrix::rowProdVec(const uint aRowNo, const double* v) const {
+  double lRes = 0.0;
+  for(uint j = 0; j < noCols(); ++j) {
+    lRes += (*this)(aRowNo,j) * v[j];
+  }
+  return lRes;
+}
+
+double 
+Matrix::selfTransposedProdSelf(uint i, uint j, uint aStopXcl) const {
+  double lRes = 0.0;
+  for(uint k = 0; k < aStopXcl; ++k) {
+    lRes += (*this)(k,i) * (*this)(k,j);
+  }
+  return lRes;
+}
+
+double
+Matrix::AB(const Matrix& A, const Matrix& B, uint i, uint j, uint aStopXcl) {
+  double lRes = 0.0;
+  for(uint l = 0; l < aStopXcl; ++l) {
+    lRes += A(i,l) * B(l,j);
+  }
+  return lRes;
+}
+
+double
+Matrix::IminusAB(const Matrix& A, const Matrix& B, uint i, uint j, uint aStopXcl) {
+  double lRes = 0.0;
+  for(uint l = 0; l < aStopXcl; ++l) {
+    lRes += A(i,l) * B(l,j);
+  }
+  return ((i == j) ? (1.0 - lRes) : (-lRes));
+}
+
+
+
+void
+Matrix::vecMPI(double* lRes, const double* v, const uint n) {
+  const double lDotProd = vecDotProd(v, v, n);
+  if(0.0 == lDotProd) {
+    for(uint i = 0; i < n; ++i) {
+      lRes[i] = 0.0;
+    }
+  } else {
+    const double x = 1.0 / lDotProd;
+    for(uint i = 0; i < n; ++i) {
+      lRes[i] = x * v[i];
+    }
+  }
+}
+
+void
+Matrix::setToMoorePenroseInverseOf(const Matrix& A, const double aEpsilon, const bool aTrace) {
+  if(aTrace) {
+    std::cout << "A: " << std::endl;
+    A.print(std::cout, 3);
+  }
+  const uint m = A.noRows();
+  const uint n = A.noCols();
+  rescale(n,m); // A \in R^{m,n}, A^+ \in R^{n,m}
+  Matrix& Ap = (*this); // Moore Penrose Inverse A^+ of A
+  // Greville-Algorithm (see book by Schmidt, Trenkler)
+  // row-wise calculation of A^+
+  // A = [a_0,\ldots,a_n], a_j column vectors of A
+  // A_k = [a_0,\ldots,a_k], partial matrix: first $k$ columns
+  // k = 0:
+  //   calculate first row of A^+_0(0,*) = mpi(a_0)
+  const double lDotProd0 = A.colColDotProd(0,0);
+  if(0.0 == lDotProd0) {
+    for(uint j = 0; j < m; ++j) {
+      Ap(0,j) = 0.0;
+    }
+  } else {
+    const double x = 1.0 / lDotProd0;
+    for(uint j = 0; j < m; ++j) {
+      Ap(0,j) = x * A(j,0);
+    }
+  }
+
+  if(aTrace) {
+    std::cout << "k: 0: " << std::endl;
+    std::cout << "A^+: " << std::endl;
+    Ap.print(std::cout, 3);
+  }
+
+  // k > 0:
+  // additional variables:
+  // d_k' = a_k' A^+'_{k-1} A^+_{k-1} ; AptAp_k = A^+'_{k-1} A^+_{k-1}
+  // c_k  = (I - A_{k-1} A^+{k-1}) a_j
+  // b_k' = c_k^+ + ((1 - c_k^+ c_k) / (1 + d_k' a_k)) d_k'
+  // A^+_k = | A^+_{k-1} - A^+{k-1} a_k b_k' |
+  //         |           b_k'                |
+  //
+  // d_k':
+  /*
+     AptAp_k = A^+'_{k-1} A^+_{k-1} 
+     AptAp_k(i,j) = sum_{l=1}^{k-1} a^+_{l,i}a^+{l,j} = sum_{l=1}^{k-1} a^+_{l,i}a^+{l,j} + a^+_{k,i}a^+{k,j}
+     d_k'(j) = (a_k' A^+_{k-1}' A^+_{k-1})(j)
+             = sum_{p=1}^{k-1} a_k(p) (A^+_{k-1}' A^+_{k-1})(p,j)
+             = sum_{p=1}^{k-1} A(k,p) (A^+_{k-1}' A^+_{k-1})(p,j)
+  */
+  double d[m];
+  double c[m];
+  double cp[m];
+  double b[m];
+  // b_k stored in Ap;
+  for(uint k = 1; k < n; ++k) {
+    if(aTrace) {
+      std::cout << "-----------------" << std::endl;
+      std::cout << "k: " << k << std::endl;
+
+      std::cout << "A^+'A^+: " << std::endl;
+      for(uint i = 0; i < m; ++i) {
+        for(uint j = 0; j < m; ++j) {
+          std::cout << Ap.selfTransposedProdSelf(i,j,k) << ' ';
+        }
+        std::cout << std::endl;
+      }
+      std::cout << std::endl;
+    }
+
+    // d_k
+    for(uint j = 0; j < m; ++j) {
+      d[j] = 0.0;
+      for(uint i = 0; i < m; ++i) {
+        d[j] += A(i,k) * Ap.selfTransposedProdSelf(i,j,k);
+      }
+    }
+
+    if(aTrace) {
+      std::cout << "d: ";
+      printVector(d, m);
+      std::cout << std::endl << std::endl;
+    }
+
+    for(uint i = 0; i < m; ++i) {
+      c[i] = 0.0;
+      for(uint j = 0; j < m; ++j) {
+        c[i] += IminusAB(A, Ap, i, j, k) * A(j,k);
+        if(-aEpsilon < c[i] && c[i] < aEpsilon) {
+          c[i] = 0.0;
+        }
+      }
+    }
+
+    if(aTrace) {
+      std::cout << "c: ";
+      printVector(c, m);
+      std::cout << std::endl << std::endl;
+    }
+
+    Matrix::vecMPI(cp, c, m);
+
+    if(aTrace) {   
+      std::cout << "cp: ";
+      printVector(cp, m);
+      std::cout << std::endl << std::endl;
+    }
+
+    const double cpc = vecDotProd(cp, c, m);
+    const double da  = A.colVecDotProd(d, k);
+
+    if(aTrace) {
+      std::cout << " <c^+, c> = " << cpc << std::endl;
+      std::cout << " <d,a_k>  = " << da << std::endl;
+    }
+
+    for(uint i = 0; i < m; ++i) {
+      b[i] = cp[i] + ((1 - cpc) / (1.0 + da)) * d[i];
+    }
+
+    if(aTrace) {
+      std::cout << "b: ";
+      printVector(b, m);
+      std::cout << std::endl << std::endl;
+
+      std::cout << "A^+: " << std::endl;
+      Ap.print(std::cout, 3);
+      std::cout << std::endl;
+    }
+
+    double Apa[m];
+
+    for(uint i = 0; i < k; ++i) {
+      double x = 0;
+      for(uint j = 0; j < m; ++j) {
+         x += Ap(i,j) * A(j,k);
+      }
+      Apa[i] = x;
+    }
+
+    if(aTrace) {
+      std::cout << "A^+a: ";
+      printVector(Apa, k);
+      std::cout << std::endl;
+    }
+
+    for(uint i = 0; i < k; ++i) {
+      for(uint j = 0; j < m; ++j) {
+        Ap(i,j) -=  Apa[i] * b[j];
+      }
+    }
+
+    for(uint j = 0; j < m; ++j) {
+      Ap(k,j) = b[j];
+    }
+
+    if(aTrace) {
+      std::cout << "A^+: " << std::endl;
+      Ap.print(std::cout, 3);
+      std::cout << std::endl;
+    }
+
+  }
+} 
+
+void
+Matrix::productOf(double* aRes, const Matrix& A, const double* v) {
+  for(uint i = 0; i < A.noRows(); ++i) {
+    double x = 0.0;
+    for(uint j = 0; j < A.noCols(); ++j) {
+      x += A(i,j) * v[j];
+    }
+    aRes[i] = x;
+  }
+}
+
+void
+Matrix::productOfAtV(double* aRes, const Matrix& A, const double* v) {
+  for(uint i = 0; i < A.noCols(); ++i) {
+    double x = 0.0;
+    for(uint j = 0; j < A.noRows(); ++j) {
+      x += A(j,i) * v[j];
+    }
+    aRes[i] = x;
+  }
+}
+
+std::ostream&
+Matrix::printVector(const double* v, const uint n) {
+  return printVector(std::cout, v, n);
+}
+
+std::ostream&
+Matrix::printVector(std::ostream& os, const double*v, const uint n) {
+    os << '(';
+    for(uint i = 0; i < n; ++i) {
+      os << v[i];
+      if((n-1) != i ) { os << ' '; }
+    }
+    os << ')';
+    return os;
+}
+
+void
+Matrix::assign(const Matrix& m) {
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      (*this)(i,j) = m(i,j);
+    }
+  }
+}
+
+int
+Matrix::error(const char* aMsg) {
+  int i = 0;
+  std::cerr << "Matrix::error: " << aMsg << std::endl;
+  return (1/i);
+}
+
+void
+Matrix::initFromStream(std::istream& is, const uint n, const uint m) {
+  rescale(n,m);
+  double x;
+  for(uint i = 0; i < n; ++i) {
+    for(uint j = 0; j < m; ++j) {
+       is >> x;
+       if(is.eof()) { break; }
+       (*this)(i,j) = x;
+    }
+  }
+}
+
+std::ostream&
+Matrix::print(std::ostream& os, const int w) const {
+  for(uint i = 0; i < noRows(); ++i) {
+    for(uint j = 0; j < noCols(); ++j) {
+      os << std::setw(w) << (*this)(i,j) << ' ';
+    }
+    os << std::endl;
+  }
+  return os;
+}
+

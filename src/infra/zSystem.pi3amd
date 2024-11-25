@@ -1,0 +1,39 @@
+     hostname: pi3amd
+      machine: x86_64
+       osname: Linux
+    osrelease: 5.4.0-70-generic
+    osversion: #78-Ubuntu SMP Fri Mar 19 13:29:52 UTC 2021
+   endianness: little endian
+   domainname: (none)
+       no cpu: 1
+     no cores: 4
+   no threads: 8
+       vendor: AMD
+   clockticks: 3625917000
+    cycle[ns]: 0.275792
+    ram total: 15729496064
+    ram free : 3601145856
+     pagesize: 4096
+  cachline sz: 64
+cpu info:
+   0  AMD Ryzen 5 PRO 2400G with Radeon Vega Graphics   0
+cpu/core/thread topology:
+   0 [0 [ 0 1 ]] [1 [ 2 3 ]] [2 [ 4 5 ]] [3 [ 6 7 ]] 
+cache info: 
+   0 : L1 32K Data  L1 64K Instruction  L2 512K Unified  L3 4096K Unified  
+
+
+cpuid: 
+cpuid     max: 13
+cpuid ext max: 0
+      sig: 0.0.0.0
+ vendor: AMD
+
+hw thread 0 clockticks: 3625917000
+hw thread 1 clockticks: 3625917000
+hw thread 2 clockticks: 3625917000
+hw thread 3 clockticks: 3625917000
+hw thread 4 clockticks: 3625917000
+hw thread 5 clockticks: 3625917000
+hw thread 6 clockticks: 3625917000
+hw thread 7 clockticks: 3625917000

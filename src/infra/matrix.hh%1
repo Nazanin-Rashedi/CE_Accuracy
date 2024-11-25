@@ -1,0 +1,85 @@
+#ifndef MATRIX_HH
+#define MATRIX_HH
+
+#include <stdarg.h>
+#include <stdlib.h>
+#include <iostream>
+#include <iomanip>
+
+// #define CHECK if(!(0 <= i && i < noRows() && 0 <= j && j < noCols())) { std::cout << (1.0/0.0) << std::endl; }
+#define CHECK
+
+class Matrix {
+  public:
+    typedef unsigned int uint;
+  public:
+    Matrix();
+    Matrix(uint n, uint m);
+    Matrix(uint n, uint m, double a11 ...); // double, ...: array elements
+    Matrix(const Matrix&);
+    virtual ~Matrix();
+  public:
+    inline uint noRows() const { return _noRows; }
+    inline uint noCols() const { return _noCols; }
+  public:
+    int    countZeroElements() const;
+    int    countNonZeroElements() const;
+    double sumAllElements() const;
+    double sumAllElements(uint aRowStart, uint aRowEnd, uint aColStart, uint aColEnd) const;
+  public:
+    void rescale(uint i, uint j);
+    void setNull();
+  public:
+    Matrix& operator=(const Matrix&);
+  public:
+    inline double& operator()(uint i, uint j) const { CHECK return _m[i*noCols() + j]; };
+    inline double& operator()(uint i, uint j)       { CHECK return _m[i*noCols() + j]; };
+  public:
+    inline const double* row(uint i) const { return &(_m[i*noCols()]); }
+  public:
+    void setToSumOf(const Matrix& m1, const Matrix& m2);
+    void setToDifferenceOf(const Matrix& m1, const Matrix& m2);
+    void setToProductOf(const Matrix& m1, const Matrix& m2);
+    void setToProductWithDiagAsVector(const Matrix& A, const double* v);
+    void setToProductWithDiagAsVector(const double* v, const Matrix& A);
+    void setToProductOfWithFirstTransposed(const Matrix& m1, const Matrix& m2);
+    void setAllTo(double x);
+    void setAllTo(double x, uint aRowStart, uint aRowEnd, uint aColStart, uint aColEnd);
+    void setZeroSmallerThan(const double eps);
+    void divideAllBy(double x);
+    void divideAllBy(double x, uint aRowStart, uint aRowEnd, uint aColStart, uint aColEnd);
+    void rowNormalize(); // divide all row elements by row sum
+    void colNormalize(); // divide all column elements by column sum
+    void setToRowSubmatrix(const Matrix& m, const uint* aRows, uint aNoRows);
+  public:
+    void setToElementWiseProduct(const Matrix& m1, const Matrix& m2);
+    void setToElementWiseQuotient(const Matrix& m1, const Matrix& m2);
+  public:
+    static double vecDotProd(const double* v1, const double* v2, const uint aSize);
+           double colColDotProd(const uint c1, const uint c2) const;
+           double rowRowDotProd(const uint r1, const uint r2) const;
+           double colRowDotProd(const uint aRow, const uint aCol) const; // n x n only
+           double colVecDotProd(const double* v, const uint aColNo) const;
+           double rowProdVec(const uint aRowNo, const double* v) const;
+           double selfTransposedProdSelf(uint i, uint j, uint aStopXcl) const; // return (A^T A)(i,j)
+    static double AB(const Matrix& A, const Matrix& B, uint i, uint j, uint aStopXcl);
+    static double IminusAB(const Matrix& A, const Matrix& B, uint i, uint j, uint aStopXcl);
+    static void   vecMPI(double* lRes, const double* v, const uint aSize);
+           void   setToMoorePenroseInverseOf(const Matrix& A, const double aEpsilon = 1E-11, const bool aTrace = false); // set to Moore-Penrose inverse of A
+    static void   productOf(double* aRes, const Matrix& A, const double* v); // aRes = Av 
+    static void   productOfAtV(double* aRes, const Matrix& A, const double* v); // aRes = A^tv 
+    static std::ostream& printVector(const double* v, const uint aSize);
+    static std::ostream& printVector(std::ostream& os, const double* v, const uint aSize);
+  public:
+    void initFromStream(std::istream& is, const uint n, const uint m);
+    std::ostream& print(std::ostream& os, const int aFieldWidth) const;
+  protected:
+    void assign(const Matrix& m);
+    int  error(const char*);
+  protected:
+    uint  _noRows;
+    uint  _noCols;
+    double* _m;
+};
+
+#endif

@@ -1,0 +1,40 @@
+
+void
+Matrix::setToSquareRootLowerTriangular_XF(const Matrix& A, const double aEps) {
+  assert(A.noRows() == A.noCols());
+  const int n = A.noRows(); // must be equal to m.noCols()
+  rescale_no_init(n,n);
+  // copy m to this
+  memcpy((void*) _m, A._m, n * n * sizeof(double));
+  // calc lower triangular
+  double lSum = 0;
+  for(int i = 0; i < n; i++) {
+    for(int j = i; j < n; j++) {
+      // double lSum = (*this)(i,j);
+      lSum = 0;
+      // for(int k = i-1 ; k >= 0; k--) {
+      //   lSum += (*this)(i,k) * (*this)(j,k);  // row sum
+      // }
+      lSum = vp_dotprod8(data() + i * n, data() + j * n, i);
+      lSum = (*this)(i,j) - lSum;
+      if(i == j) {
+        if(aEps > std::fabs(lSum)) {
+          // std::cerr.precision(12);
+          // std::cerr << "Cholesky failed: " << lSum << std::endl;
+          // std::cerr.precision(6);
+          throw CholeskyFailed(i, lSum);
+        }
+        (*this)(i,i) = sqrt(lSum);
+      } else { 
+        (*this)(j,i) = (lSum) / (*this)(i,i);
+      }
+    }
+  }
+  // set upper triangular to zero
+  for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+      (*this)(i,j) = 0.0;
+    }
+  }
+}
+

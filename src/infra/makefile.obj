@@ -1,0 +1,201 @@
+# use ODI=xxx
+# to manipulate ~/obj/$(CPUARCH)/infra
+# like in
+# make clean ODI=xxx
+# make       ODI=xxx
+# without ODI, current directory is manipulated
+# make clean
+# make
+
+include ${HOME}/src/inc.mk
+
+
+CINCL = -I. -I..
+
+
+ifdef ODI
+OBJDIR = $(OBJBASEDIR)/infra
+vpath .o $OBJBASEDIR
+else
+OBJDIR = .
+vpath .o $(HOME)/src
+endif
+
+
+objdir = $(OBJDIR)
+
+
+OBJALL = $(OBJDIR)/BitvectorLong.o \
+      $(OBJDIR)/buckethistogram.o \
+      $(OBJDIR)/print_test_header.o \
+      $(OBJDIR)/random_string.o \
+      $(OBJDIR)/geocoord.o \
+      $(OBJDIR)/datejd.o \
+      $(OBJDIR)/linereader.o \
+      $(OBJDIR)/linereaderWithEdit.o \
+      $(OBJDIR)/commandreader.o \
+      $(OBJDIR)/temperature.o \
+      $(OBJDIR)/timestamp.o \
+      $(OBJDIR)/matrix.o \
+      $(OBJDIR)/gmsvd.o \
+      $(OBJDIR)/StringDictionaryHashed.o \
+      $(OBJDIR)/simpleexception.o \
+      $(OBJDIR)/simplecharcontainer.o \
+      $(OBJDIR)/like.o \
+      $(OBJDIR)/unionfind.o \
+      $(OBJDIR)/lageparameter.o \
+      $(OBJDIR)/stimestamp.o \
+      $(OBJDIR)/stime.o \
+      $(OBJDIR)/system.o \
+      $(OBJDIR)/WaveletTransformNonStd2dim.o \
+
+BINALL = $(OBJDIR)/main_system \
+      $(OBJDIR)/main_random_string \
+      $(OBJDIR)/main_bh \
+      $(OBJDIR)/main_multmatvec1 \
+      $(OBJDIR)/main_multmatvec2 \
+      $(OBJDIR)/main_multmatvec3 \
+      $(OBJDIR)/main_multmatvec4 \
+      $(OBJDIR)/main_multmatvec5 \
+      $(OBJDIR)/main_matrix \
+      $(OBJDIR)/main_designmatrix \
+      $(OBJDIR)/main_qr \
+
+# special requires SSE, BMI2 etc. (intel only)
+
+NEEDSSIMD = main_multmatvec6 \
+          gmstrstr16.o \
+          gmstrstr16_42.o \
+
+NEEDSMOSEK = mosekenv.o 
+
+
+
+ifeq ($(CPUARCH), x86_64)
+ifeq ($(HOST), lu187349)
+ALL = $(OBJALL) $(BINALL) $(NEEDSSIMD) 
+else
+ALL = $(OBJALL) $(BINALL) $(NEEDSSIMD) $(NEEDSMOSEK)
+endif
+else
+ALL = $(OBJALL) $(BINALL)
+endif
+
+all : $(ALL)
+	@ echo build for ${CPUARCH}
+
+
+$(OBJDIR)/main_rotmatrix : $(OBJDIR)/main_rotmatrix.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_rotmatrix.o : main_rotmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_rotmatrix.cc
+
+$(OBJDIR)/main_qr : $(OBJDIR)/main_qr.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_qr.o : main_qr.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_qr.cc
+
+$(OBJDIR)/main_bh : $(OBJDIR)/main_bh.o $(OBJDIR)/buckethistogram.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_bh.o : main_bh.cc buckethistogram.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_bh.cc
+
+
+$(OBJDIR)/main_designmatrix : $(OBJDIR)/main_designmatrix.o $(OBJDIR)/gmsvd.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_designmatrix.o : main_designmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_designmatrix.cc
+
+
+$(OBJDIR)/main_matrix : $(OBJDIR)/main_matrix.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_matrix.o : main_matrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_matrix.cc
+
+$(OBJDIR)/main_multmatvec1 : $(OBJDIR)/main_multmatvec1.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec1.o : main_multmatvec1.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec1.cc
+
+$(OBJDIR)/main_multmatvec2 : $(OBJDIR)/main_multmatvec2.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec2.o : main_multmatvec2.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec2.cc
+
+$(OBJDIR)/main_multmatvec3 : $(OBJDIR)/main_multmatvec3.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec3.o : main_multmatvec3.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec3.cc
+
+$(OBJDIR)/main_multmatvec4 : $(OBJDIR)/main_multmatvec4.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec4.o : main_multmatvec4.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec4.cc
+
+$(OBJDIR)/main_multmatvec5 : $(OBJDIR)/main_multmatvec5.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec5.o : main_multmatvec5.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec5.cc
+
+$(OBJDIR)/main_multmatvec6 : $(OBJDIR)/main_multmatvec6.o $(OBJDIR)/matrix.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_multmatvec6.o : main_multmatvec6.cc matrix.hh
+	$(CC) $(CFSSE) $(CFLAGS) $(CINCL) -c -o $@ main_multmatvec6.cc
+
+
+$(OBJDIR)/main_random_string : $(OBJDIR)/main_random_string.o $(OBJDIR)/random_string.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_random_string.o : main_random_string.cc random_string.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_random_string.cc
+
+$(OBJDIR)/main_system : $(OBJDIR)/main_system.o $(OBJDIR)/system.o
+	$(CC) -o $@ $^
+
+$(OBJDIR)/main_system.o : main_system.cc system.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ main_system.cc
+
+
+# SPECIAL NEEDS MOSEK
+$(OBJDIR)/mosekenv.o : mosekenv.cc mosekenv.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -I/opt/mosek/6/tools/platform/linux64x86/h/ -o $@ mosekenv.cc
+
+
+# SPECIAL NEEDS SIMD
+
+$(OBJDIR)/gmstrstr16.o : gmstrstr16.cc gmstrstr16.hh
+	$(ICPC)   $(CFLAGS)  $(CINCL) $(CFSSE) -c -o $@ gmstrstr16.cc
+
+$(OBJDIR)/gmstrstr16_42.o : gmstrstr16_42.cc gmstrstr16_42.hh
+	$(ICPC)   $(CFLAGS) $(CINCL) $(CFSSE)  -c -o $@ gmstrstr16_42.cc
+
+
+# GENERAL
+
+$(OBJDIR)/%.o : %.cc %.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $@ $*.cc
+
+
+# PHONY
+
+.PHONY: clean
+
+clean :
+	cd $(OBJDIR); rm -f *.o *.gch a.out $(ALL)
+
+
+
+include ${HOME}/src/fin.mk
+
+

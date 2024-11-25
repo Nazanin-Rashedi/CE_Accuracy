@@ -1,0 +1,28 @@
+     hostname: pi3-n2
+      machine: aarch64
+       osname: Linux
+    osrelease: 4.9.219-1-ARCH
+    osversion: #1 SMP PREEMPT Tue Apr 21 00:14:49 UTC 2020
+   endianness: little endian
+   domainname: (none)
+       no cpu: 2
+     no cores: 6
+   no threads: 6
+       vendor: ARM
+   clockticks: 1896000000
+    cycle[ns]: 0.527426
+    ram total: 3890229248
+    ram free : 3286085632
+     pagesize: 4096
+  cachline sz: 64
+cpu info:
+   0     0
+   1     0
+cpu/core/thread topology:
+   0 [0 [ 0 ]] [1 [ 1 ]] 
+   1 [0 [ 2 ]] [1 [ 3 ]] [2 [ 4 ]] [3 [ 5 ]] 
+cache info: 
+   0 : 
+   1 : 
+
+sw2hw binding:5 4 3 2 1 0

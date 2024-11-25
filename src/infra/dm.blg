@@ -1,0 +1,47 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Arch Linux)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: dm.aux
+The style file: plain.bst
+Database file #1: /home/moer/GOM/GOPTIM/BIB/goptim.bib
+Database file #2: /home/moer/BIB/literatur.bib
+You've used 1 entry,
+            2118 wiz_defined-function locations,
+            656 strings with 8512 characters,
+and the built_in function-call counts, 340 in all, are:
+= -- 32
+> -- 13
+< -- 0
++ -- 6
+- -- 4
+* -- 24
+:= -- 63
+add.period$ -- 3
+call.type$ -- 1
+change.case$ -- 5
+chr.to.int$ -- 0
+cite$ -- 1
+duplicate$ -- 11
+empty$ -- 27
+format.name$ -- 4
+if$ -- 68
+int.to.chr$ -- 0
+int.to.str$ -- 1
+missing$ -- 1
+newline$ -- 8
+num.names$ -- 2
+pop$ -- 3
+preamble$ -- 1
+purify$ -- 4
+quote$ -- 0
+skip$ -- 8
+stack$ -- 0
+substring$ -- 27
+swap$ -- 1
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 4
+warning$ -- 0
+while$ -- 3
+width$ -- 2
+write$ -- 13

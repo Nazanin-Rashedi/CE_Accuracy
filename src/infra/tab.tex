@@ -1,0 +1,94 @@
+\documentclass[11pt]{article}
+
+\usepackage{a4}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+
+\newcommand{\hateq}{\hat{=}}
+\newcommand{\bv}{\text{bv}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\norm}[1]{||#1||}
+
+\newcommand{\ctabs}{XX\=XX\=XX\=XX\=XX\=XX\=XX\=XX\=\kill}
+
+\newcommand{\Bor}{|_b}
+
+\newcommand{\Xlb}{x_{\text{lb}}}
+\newcommand{\Xub}{x_{\text{ub}}}
+\newcommand{\Blb}{b_{\text{lb}}}
+\newcommand{\Bub}{b_{\text{ub}}}
+
+\newcommand{\nin}{\not\in}
+
+\newtheorem{ddef}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{cor}{Corollary}[section]
+
+\newcommand{\argmax}{\text{argmax}}
+\newcommand{\argmin}{\text{argmin}}
+\newcommand{\rang}{\text{rang}}
+
+\author{G. Moerkotte}
+\title{Different LP Problems}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+\section{Wikipedia}
+
+Problem:
+$$
+  \argmax_{x \in \R^n} \{ c^t x | Ax \leq b, x \geq 0\}
+$$
+
+Phase I:
+$$
+ \argmin_{z \in \R^m} \{ \sum_{i=1}^{m} z_i | Ax + z = b, x \geq 0, z \geq 0 \}
+$$
+in standard form
+$$
+  \argmax_{z \in \R^m} \{ sum_{i=1}^{m} -z_i | Ax + z = b, x \geq 0, z \geq 0 \}
+$$
+
+\section{Gr\"otschel}
+
+Problem:
+$$
+  \argmax_{x \in \R^n} \{ c^tx | Ax \leq b \}
+$$
+
+p111-p
+
+Lineares Program in Standardform [p112]:
+$$
+ \argmax_{x \in \R^n} \{ c^tx | Ax = b, x \geq 0\}
+$$
+
+mit
+\begin{enumerate}
+\item $m < n$
+\item $A \in \R^{m,n}$
+\item $\rang(A) = m$
+\item $P(A,b) \neq \emptyset $
+\end{enumerate}
+
+
+Phase I:
+\begin{eqnarray*}
+max {\bf 1}^t Ax & & \\
+\begin{pmatrix} A, I \end{pmatrix} \begin{pmatrix} x \\ z \end{pmatrix} &=& b \\
+   x &\geq& 0 \\
+   z &\geq& 0
+\end{eqnarray*}
+
+
+
+
+\end{document}

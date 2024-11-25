@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+
+\usepackage{a4}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+
+\newcommand{\SamProb}{{\textgoth P}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\R}{\mathbb{R}}
+\newtheorem{theo}{Theorem}
+
+\author{GM}
+\title{Design Matrix}
+
+\begin{document}
+
+\begin{description}
+\item[$A$] complete design matrix or arbitrary matrix
+\item[$B$] partial  design matrix or arbitrary matrix
+\item[$M$] arbitrary matrix
+\end{description}
+
+Def. MPI ($A$ arbitrary matrix):
+\begin{eqnarray}
+A   A^+ A   &=& A \\
+A^+ A   A^+ &=& A^+ \\
+(A^+ A)^t   &=& A^t A \\
+(A A^t)     &=& A A^t \\
+\end{eqnarray}
+gilt:
+\begin{eqnarray}
+(A^t)^+  &=& (A^+)^t    \label{eqn:mpi:At} \\
+(A^+)^+  &=& A          \label{eqn:mpi:Aplusplus} \\
+(AA^t)^+ &=& (A^t)^+ A^+ \label{eqn:mpi:AAt}
+\end{eqnarray}
+The last equality can be found in \cite[p6,Prop.~3.2]{BaHu12}.
+
+if appearing inverses exist:
+\begin{eqnarray*}
+A^+ &=&  A^t(AA^t)^{-1} \\
+A^+ &=& (A^tA)^{-1} A^t \\
+\end{eqnarray*}
+
+
+$B$ partial design matrix
+\begin{eqnarray*}
+B B^+ &=& I_m \\
+B^+ B &\neq& I_n \\
+\end{eqnarray*}
+
+$B$ partial design matrix
+$D = \diag(v)$,
+$E = \diag(\sqrt{v})$,
+$X$, $Y$ any matrices:
+\begin{displaymath}
+\begin{array}{llll}
+(BDB')^+ &=& (B(EE)B')^+        & \text{// $D = EE$} \\
+         &=& (B(EE')B')^+       & \text{// $E = E'$} \\
+         &=& ((BE)(E'B'))^+     & \text{// associativity} \\
+         &=& ((BE)(BE)')^+      & \text{// $(XY)'= Y'X'$, $\surd$} \\
+         &=& ((BE)')^+ (BE)^+   & \text{// Eqn.~\ref{eqn:mpi:AAt}, where $A:=(BE)$} \\
+         &=& ((BE)^+)' (BE)^+   & \text{// Eqn.~\ref{eqn:mpi:At}} 
+\end{array}
+\end{displaymath}
+
+
+% m x k, k x n --> m x n
+% n x k, k x m --> n x m
+
+\bibliographystyle{plain}
+\bibliography{/home/moer/GOM/GOPTIM/BIB/goptim,/home/moer/BIB/literatur}
+
+\end{document}
+

@@ -1,0 +1,35 @@
+     hostname: bilbo
+      machine: armv7l
+       osname: Linux
+    osrelease: 4.14.180-1-ARCH
+    osversion: #1 SMP PREEMPT Tue May 26 02:05:58 UTC 2020
+   endianness: little endian
+   domainname: (none)
+       no cpu: 2
+     no cores: 8
+   no threads: 8
+       vendor: ARM
+   clockticks: 1500000000
+    cycle[ns]: 0.666667
+    ram total: 2090393600
+    ram free : 1762508800
+     pagesize: 4096
+  cachline sz: 0
+cpu info:
+   0     0
+   1     0
+cpu/core/thread topology:
+   0 [0 [ 4 ]] [1 [ 5 ]] [2 [ 6 ]] [3 [ 7 ]] 
+   1 [0 [ 0 ]] [1 [ 1 ]] [2 [ 2 ]] [3 [ 3 ]] 
+cache info: 
+   0 : 
+   1 : 
+sw2hw binding:3 2 1 0 7 6 5 4
+hw thread 0 clockticks: 1500000000
+hw thread 1 clockticks: 1500000000
+hw thread 2 clockticks: 1500000000
+hw thread 3 clockticks: 1500000000
+hw thread 4 clockticks: 1500000000
+hw thread 5 clockticks: 1500000000
+hw thread 6 clockticks: 1500000000
+hw thread 7 clockticks: 1500000000

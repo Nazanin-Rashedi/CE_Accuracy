@@ -1,0 +1,118 @@
+(1)  -7 x1 + 6 x2 <= 25
+(2)     x1 - 5 x2 <= 1
+(3)     x1        <= 7
+...
+
+p(1) = 3
+p(2) = (2,1)
+  6 * (2) + 5 * (1)
+ =    6 (x1 - 5 x2)     <= 6
+   +  5 (-7 x1 + 6 x2)  <= 5*25 = 125
+ =    6 x1 - 30 x2      <=   6
+   - 35 x1 + 30 x2      <= 125
+ =  -29 x1              <= 131
+
+
+-x1                     <= 0
+    - x2                <= 0
+         - x3           <= 0
+              - x4      <= 0
+ x1 + x2 + x3 + x4      <= +b_0
+-x1 - x2 - x3 - x4      <= -b_0
+    + x2      + x4      <= +b_1
+    - x2      - x4      <= -b_1
+         + x3 + x4      <= +b_2
+         - x3 - x4      <= -b_2
+              + x4      <= +b_2
+              - x4      <= -b_2
+
+
+Fourier-Motzkin-Elimination:
+F\"ur ein gegebenes $j$ 
+partitioniere Zeilenindizes in N \cup Z \cup P
+Z = \{i | A(i,j) = 0 \}
+N = \{i | A(i,j) < 0 \}
+P = \{i | A(i,j) > 0 \}
+
+Betrachte Indizes des neuen Matrix mit $r$ Zeilen und
+$r = |Z \cup (N \times P)|$.
+Da x_1 2 mal negativ und einmal positiv vorkommt.
+=========================================================================
+start with 0:
+
+-x0                     <= 0          (0)
+-x0 - x1 - x2 - x3      <= -b_0       (1)
+ x0 + x1 + x2 + x3      <= +b_0       (2)
+    - x1                <= 0          (3)
+    - x1      - x3      <= -b_1       (4)
+    + x1      + x3      <= +b_1       (5)
+         - x2           <= 0          (6)
+         - x2 - x3      <= -b_2       (7)
+         + x2 + x3      <= +b_2       (8)
+              - x3      <= 0          (9)
+              - x3      <= -b_2       (10)
+              + x3      <= +b_2       (11)
+
+fuer j = 0 ergibt sich
+Z = \{3,\ldots,11\}
+N = \{0, 1\}
+P = \{2\}
+
+$$
+  Z \cup (N \times P) = \{3,\ldots,11\} \cup \{(0,2), (1, 2)\}
+$$
+wir setzen
+X(k,*) = A(k,*) fuer k \in Z
+X(1,*) = A(0,*) + A(2,*)
+X(2,*) = A(1,*) + A(2,*)
+
+Da (1) und (2) aus der gleichen Gleichung D(0,*) = b_0 hervorgehen,
+ist die summe immer gleich 0 und braucht daher nicht betrachtet zu werden.
+
+
+X:
+    + x1 + x2 + x3      <= +b_0            (1)
+0                       <= 0 = -b_0 + b_0  (2)  // kann man weglassen
+    - x1                <= 0               (3)  
+    - x1      - x3      <= -b_1            (4)
+    + x1      + x3      <= +b_1            (5)
+         - x2           <= 0               (6)
+         - x2 - x3      <= -b_2            (7)
+         + x2 + x3      <= +b_2            (8)
+              - x3      <= 0               (9)
+              - x3      <= -b_2            (10)
+              + x3      <= +b_2            (11)
+
+
+X:
+    + x1 + x2 + x3      <= +b_0            (2)
+    - x1                <= 0               (3) 
+    - x1      - x3      <= -b_1            (4)
+    + x1      + x3      <= +b_1            (5)
+         - x2           <= 0               (6)
+         - x2 - x3      <= -b_2            (7)
+         + x2 + x3      <= +b_2            (8)
+              - x3      <= 0               (9)
+              - x3      <= -b_2            (10)
+              + x3      <= +b_2            (11)
+
+jetzt 
+Z = \{6,\ldots,11\}
+N = \{3,4\}
+P = \{2,5\}
+
+(3,2)   x2 + x3      <= +b_0 
+(3,5)        x3      <= +b_1 
+
+(4,2)   x2           <= +b_0 - b_1      (2)   koennte man weglassen, falls b_0 - b_1 >= 0, sonst widerspruch
+
+(4,5)   0 <= -b_1 + b_1       // kann man weglassen falls gueltig
+
+    + x1 + x2 + x3      <= +b_0            (2)
+    - x1                <= 0               (3) 
+    - x1      - x3      <= -b_1            (4)
+    + x1      + x3      <= +b_1            (5)
+
+
+
+

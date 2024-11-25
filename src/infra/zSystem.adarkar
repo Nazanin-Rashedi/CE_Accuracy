@@ -1,0 +1,64 @@
+     hostname: adarkar
+      machine: x86_64
+       osname: Linux
+    osrelease: 5.10.0-6-amd64
+    osversion: #1 SMP Debian 5.10.28-1 (2021-04-09)
+   endianness: little endian
+   domainname: (none)
+       no cpu: 2
+     no cores: 24
+   no threads: 24
+       vendor: Intel
+   clockticks: 1197536000
+    cycle[ns]: 0.835048
+    ram total: 270336557056
+    ram free : 256360538112
+     pagesize: 4096
+  cachline sz: 64
+cpu info:
+   0  Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz   2.6
+   1  Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz   2.6
+cpu/core/thread topology:
+   0 [0 [ 0 ]] [1 [ 1 ]] [2 [ 2 ]] [3 [ 3 ]] [4 [ 4 ]] [5 [ 5 ]] [0 [ ]] [0 [ ]] [8 [ 6 ]] [9 [ 7 ]] [10 [ 8 ]] [11 [ 9 ]] [12 [ 10 ]] [13 [ 11 ]] 
+   1 [0 [ 12 ]] [1 [ 13 ]] [2 [ 14 ]] [3 [ 15 ]] [4 [ 16 ]] [5 [ 17 ]] [0 [ ]] [0 [ ]] [8 [ 18 ]] [9 [ 19 ]] [10 [ 20 ]] [11 [ 21 ]] [12 [ 22 ]] [13 [ 23 ]] 
+cache info: 
+   0 : L1 32K Data  L1 32K Instruction  L2 256K Unified  L3 30720K Unified  
+   1 : L1 32K Data  L1 32K Instruction  L2 256K Unified  L3 30720K Unified  
+
+
+cpuid: 
+cpuid     max: 15
+cpuid ext max: 0
+      sig: 0.0.0.0
+ vendor: Intel
+Stepping: 2
+   Model: 15
+  Family: 6
+    Type: 0
+  XModel: 3
+ XFamily: 0
+
+hw thread 0 clockticks: 1197536000
+hw thread 1 clockticks: 1197536000
+hw thread 2 clockticks: 1197536000
+hw thread 3 clockticks: 1197536000
+hw thread 4 clockticks: 1197536000
+hw thread 5 clockticks: 1197536000
+hw thread 6 clockticks: 1197536000
+hw thread 7 clockticks: 1197536000
+hw thread 8 clockticks: 1197536000
+hw thread 9 clockticks: 1197536000
+hw thread 10 clockticks: 1197536000
+hw thread 11 clockticks: 1197536000
+hw thread 12 clockticks: 1197536000
+hw thread 13 clockticks: 1197536000
+hw thread 14 clockticks: 1197536000
+hw thread 15 clockticks: 1197536000
+hw thread 16 clockticks: 1197536000
+hw thread 17 clockticks: 1197536000
+hw thread 18 clockticks: 1197536000
+hw thread 19 clockticks: 1197536000
+hw thread 20 clockticks: 1197536000
+hw thread 21 clockticks: 1197536000
+hw thread 22 clockticks: 1197536000
+hw thread 23 clockticks: 1197536000

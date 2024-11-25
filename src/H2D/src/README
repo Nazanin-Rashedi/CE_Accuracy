@@ -1,0 +1,51 @@
+
+Different kinds of histograms:
+
+A) Literatur
+
+0) equi-width histogram (RegP)
+1) equi depth histograms (EQD)
+2) discrete cosine transform (DCT)
+3) GenHist
+4) MHist
+5) Phased
+6) Sampling
+7) non-standard wavelets
+8) QTS, IQTS
+9) HiRed
+
+B) eigene Versuche
+
+0) GridTree
+1) HFT (in RegP)
+2) NonoTree
+3) FlexTree (Fxt)
+4) GxTree   (Gxt, successor of Fxt)
+
+
+
+CheckError
+DiscreteCosineTransform
+EquiDepthHist
+FlexTree
+GenHist
+grid
+GridTree
+GxTree
+HiRed
+infra
+main
+makefile
+MHist
+NonoTree
+Phased
+QTS
+README
+RegP
+Sampling
+scale
+test
+tmp
+Wavelet
+
+

@@ -1,0 +1,21 @@
+continue working on
+1) matrix::qr: permutationsmatrix einbauen
+2) main_alpha: binaersuche fuer psi
+3) SampleEstimatorIdp: vollstaendig fuer alles anwenden,
+   um dann die parameter mit sqlite zu suchen.
+   parameter zu implementierten in matrix:
+   a) symmetry deviating q-err-prod
+   b) symmetry deviating prod (ohne q, nur \prod_{i>j} pij/pji...)
+
+plot 'zExpDist' using 1:2 with lines title '0.1', \
+     'zExpDist' using 1:3 with lines title '0.5', \
+     'zExpDist' using 1:4 with lines title '1.0', \
+     'zExpDist' using 1:5 with lines title '2.0', \
+     'zExpDist' using 1:6 with lines title '5.0'
+
+set output 'z_expdist.pdf'
+set terminal pdfcairo
+replot
+set output 
+set terminal
+

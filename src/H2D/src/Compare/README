@@ -1,0 +1,24 @@
+nazanine format: 
+SDS: directories: earthquake|OpenStreetMap|tiger
+DS results: filenames: <no>_<SDS>_<DS>_<hist>.out  
+each file:
+6 arrays, each 28x17 matrices: 
+one array for ktheta k=1..6
+each row: for one selectivity class and counts for different q-error classes
+
+Abbreviations (and attribute names in relations):
+cc  cardinality class
+sc  selectivity class
+qc  qerror      class
+syn synopsis name
+
+compare.bash:
+  skript running fa for some simple queries
+
+
+main_prepare.cc: 
+  read experiment result files and produce
+  1) /global/moer/H2D/res/zH2dRaw.rel containing all data with count != 0 flattened
+  2) /global/moer/H2D/res/zH2dGrouped.rel containing aggregated data [group by cc, sc]
+  3) comparison summary
+

@@ -1,0 +1,83 @@
+234/infra> ./main_designmatrix 8
+time to invert C: 0.005719 [s]
+z = 8
+n = 256
+x1 == x2 == x3 == x4 == x5
+runtime matrix  mult: 0.059 [ms]
+        special a   : 0.03 [ms]
+        special b   : 0.027 [ms]
+        special c   : 0.025 [ms]
+        special rec : 0.007 [ms]
+              factor: 8.42857
+
+235/infra> ./main_designmatrix 9
+time to invert C: 0.055291 [s]
+z = 9
+n = 512
+x1 == x2 == x3 == x4 == x5
+runtime matrix  mult: 0.207 [ms]
+        special a   : 0.082 [ms]
+        special b   : 0.071 [ms]
+        special c   : 0.065 [ms]
+        special rec : 0.015 [ms]
+              factor: 13.8
+
+236/infra> ./main_designmatrix 10
+time to invert C: 0.338893 [s]
+z = 10
+n = 1024
+x1 == x2 == x3 == x4 == x5
+runtime matrix  mult: 0.841 [ms]
+        special a   : 0.232 [ms]
+        special b   : 0.21 [ms]
+        special c   : 0.192 [ms]
+        special rec : 0.044 [ms]
+              factor: 19.1136
+
+237/infra> ./main_designmatrix 11
+time to invert C: 4.84777 [s]
+z = 11
+n = 2048
+x1 == x2 == x3 == x4 == x5
+runtime matrix  mult: 3.638 [ms]
+        special a   : 0.696 [ms]
+        special b   : 0.65 [ms]
+        special c   : 0.574 [ms]
+        special rec : 0.133 [ms]
+              factor: 27.3534
+
+238/infra> ./main_designmatrix 12
+time to invert C: 155.914 [s]
+z = 12
+n = 4096
+x1 == x2 == x3 == x4 == x5
+runtime matrix  mult: 14.417 [ms]
+        special a   : 2.098 [ms]
+        special b   : 1.913 [ms]
+        special c   : 1.709 [ms]
+        special rec : 0.394 [ms]
+              factor: 36.5914
+
+239/infra> ./main_designmatrix 13
+time to invert C: 1986.29 [s]
+z = 13
+n = 8192
+x1 == x2 == x3 == x4 == x5
+runtime matrix  mult: 56.259 [ms]
+        special a   : 6.729 [ms]
+        special b   : 5.766 [ms]
+        special c   : 5.108 [ms]
+        special rec : 1.172 [ms]
+              factor: 48.0026
+
+
+                |--------------- milliseconds -------------|
+ z    Cinv[s]    matmult   spec_a   spec_b   spec_c     rec   matmult/rec
+ 8     0.0057     0.059     0.030    0.027    0.025   0.007     8.43
+ 9     0.0553     0.207     0.082    0.071    0.065   0.015    13.80
+10     0.3389     0.841     0.232    0.210    0.192   0.044    19.11
+11     4.8478     3.638     0.696    0.650    0.574   0.133    27.35
+12   155.9140    14.417     2.098    1.913    1.709   0.394    36.59
+13  1986.29      56.259     6.729    5.766    5.108   1.172    48.00
+
+

@@ -1,0 +1,219 @@
+# CFLAGS = -g -Wall  -std=c++0x -fPIC
+CFLAGS = -O3 -Wall -std=c++0x -fPIC
+
+CFSSE = -msse4.2 -mavx
+
+#
+# put into .bashrc:
+# export CPUARCH=`echo $MACHTYPE | sed -e 's/-.*//'`
+# and adapt makefile to work on Raspi, XU4
+#
+
+
+
+OBJDIR = ${HOME}/obj/${CPUARCH}
+
+ifeq ($(HOST), lu187349)
+CC = g++-4.6
+CFLAGS = -O3 -Wall -Weffc++ -std=c++0x -fPIC -D__OLD_SAP
+ICPC = g++-4.6
+# for profiling:
+# CFLAGS = -O3 -pg -Wall -Weffc++ -std=c++0x -D__OLD_SAP
+else
+CC = g++
+# CC = icpc
+CFLAGS = -O3 -Wall -Weffc++ -fPIC -std=c++11
+ICPC = icpc
+endif
+
+CC = g++
+# CC = g++-4.6
+# CC = icpc
+# CC = clang++
+# ICPC = clang++
+# ICPC = c++
+# ICPC = g++-4.6
+
+CINCL = -I. -I..
+
+ALL = BitvectorLong.o \
+      buckethistogram.o \
+      print_test_header.o \
+      random_string.o \
+      geocoord.o \
+      datejd.o \
+      linereader.o \
+      linereaderWithEdit.o \
+      commandreader.o \
+      main_bh.o \
+      main_random_string \
+      temperature.o \
+      timestamp.o \
+      matrix.o \
+      gmsvd.o \
+      StringDictionaryHashed.o \
+      simpleexception.o \
+      simplecharcontainer.o \
+      like.o \
+      unionfind.o \
+      lageparameter.o \
+      stimestamp.o \
+      stime.o \
+      system.o \
+      main_system \
+      WaveletTransformNonStd2dim.o \
+      main_multmatvec1 \
+      main_multmatvec2 \
+      main_multmatvec3 \
+      main_multmatvec4 \
+      main_multmatvec5 \
+      main_matrix \
+      main_designmatrix \
+      main_qr \
+
+# special requires SSE, BMI2 etc. (intel only)
+
+SPECIAL = main_multmatvec6 \
+          gmstrstr16.o \
+          gmstrstr16_42.o \
+
+MOSEK = mosekenv.o 
+
+# regular new intel processors, with mosek
+
+# this only works if you put into your .bashrc:
+# export CPUARCH=`echo $MACHTYPE | sed -e 's/-.*//'`
+# or
+# export CPUARCH=`uname -m`
+
+
+ifeq ($(CPUARCH), x86_64)
+all : $(ALL) $(SPECIAL) $(MOSEK)
+else
+all : $(ALL) 
+endif
+
+# regular new intel processors
+# all : $(ALL) $(SPECIAL) 
+
+# arm processors
+
+# all : $(ALL)
+
+WaveletTransformNonStd2dim.o : WaveletTransformNonStd2dim.cc WaveletTransformNonStd2dim.hh matrix.hh TopK.hh bit_intrinsics.hh
+	$(CC) $(CFLAGS) $(CINCL) -c WaveletTransformNonStd2dim.cc
+
+BitvectorLong.o : BitvectorLong.cc BitvectorLong.hh bitvectorsmall.hh
+	$(CC) $(CFLAGS) $(CINCL) -c BitvectorLong.cc
+
+main_rotmatrix : main_rotmatrix.o matrix.o
+	$(CC) -o main_rotmatrix main_rotmatrix.o matrix.o
+
+main_rotmatrix.o : main_rotmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_rotmatrix.cc
+
+main_qr : main_qr.o matrix.o
+	$(CC) -o main_qr main_qr.o matrix.o
+
+main_qr.o : main_qr.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_qr.cc
+
+main_bh : main_qr.o buckethistogram.o
+	$(CC) -o main_qr main_bh.o buckethistogram.o
+
+main_bh.o : main_bh.cc buckethistogram.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_bh.cc
+
+
+main_designmatrix : main_designmatrix.o gmsvd.o matrix.o
+	$(CC) -o main_designmatrix main_designmatrix.o gmsvd.o matrix.o
+
+main_designmatrix.o : main_designmatrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_designmatrix.cc
+
+
+
+main_matrix : main_matrix.o matrix.o
+	$(CC) -o main_matrix main_matrix.o matrix.o
+
+main_matrix.o : main_matrix.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_matrix.cc
+
+
+main_multmatvec1 : main_multmatvec1.o matrix.o
+	$(CC) -o main_multmatvec1 main_multmatvec1.o matrix.o
+
+main_multmatvec1.o : main_multmatvec1.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec1.cc
+
+main_multmatvec2 : main_multmatvec2.o matrix.o
+	$(CC) -o main_multmatvec2 main_multmatvec2.o matrix.o
+
+main_multmatvec2.o : main_multmatvec2.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec2.cc
+
+main_multmatvec3 : main_multmatvec3.o matrix.o
+	$(CC) -o main_multmatvec3 main_multmatvec3.o matrix.o
+
+main_multmatvec3.o : main_multmatvec3.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec3.cc
+
+main_multmatvec4 : main_multmatvec4.o matrix.o
+	$(CC) -o main_multmatvec4 main_multmatvec4.o matrix.o
+
+main_multmatvec4.o : main_multmatvec4.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec4.cc
+
+main_multmatvec5 : main_multmatvec5.o matrix.o
+	$(CC) -o main_multmatvec5 main_multmatvec5.o matrix.o
+
+main_multmatvec5.o : main_multmatvec5.cc matrix.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_multmatvec5.cc
+
+main_multmatvec6 : main_multmatvec6.o matrix.o
+	$(CC) -o main_multmatvec6 main_multmatvec6.o matrix.o
+
+main_multmatvec6.o : main_multmatvec6.cc matrix.hh
+	$(CC) $(CFSSE) $(CFLAGS) $(CINCL) -c main_multmatvec6.cc
+
+
+main_random_string : main_random_string.o random_string.o
+	$(CC) -o main_random_string main_random_string.o random_string.o
+
+main_random_string.o : main_random_string.cc random_string.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_random_string.cc
+
+main_system : main_system.o system.o
+	$(CC) -o main_system main_system.o system.o
+
+main_system.o : main_system.cc system.hh
+	$(CC) $(CFLAGS) $(CINCL) -c main_system.cc
+
+mosekenv.o : mosekenv.cc mosekenv.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -I/opt/mosek/6/tools/platform/linux64x86/h/ mosekenv.cc
+
+gmstrstr16.o : gmstrstr16.cc gmstrstr16.hh
+	$(ICPC)   $(CFLAGS)  $(CINCL) $(CFSSE) -c gmstrstr16.cc
+
+gmstrstr16_42.o : gmstrstr16_42.cc gmstrstr16_42.hh
+	$(ICPC)   $(CFLAGS) $(CINCL) $(CFSSE)  -c gmstrstr16_42.cc
+
+
+system.o : system.cc system.hh
+	$(CC) $(CFLAGS) $(CINCL) -c system.cc
+
+$(OBJDIR)/%.o : %.cc %.hh
+	$(CC) $(CFLAGS) $(CINCL) -c -o $(OBJDIR)/$*.o $*.cc
+
+%.o : %.cc %.hh
+	$(CC) $(CFLAGS) $(CINCL) -c $*.cc
+
+printenv :
+	@ echo "cc = $(CC)"
+	@ echo "icpc = $(ICPC)"
+	@ echo "cpuarch = $(CPUARCH)"
+	@ echo "home = $(HOME)"
+	@ echo "objdir = $(OBJDIR)"
+
+clean :
+	rm -f *.o *.gch a.out main_matrix main_rotmatrix main_system main_random_string main_multmatvec1 main_multmatvec2 main_multmatvec3 main_multmatvec4 main_multmatvec5

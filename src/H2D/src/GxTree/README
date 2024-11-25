@@ -1,0 +1,21 @@
+
+main_analyze: GxTree.cc:180: 
+void H2D::GxTree::Node::init(const H2D::Data2dim&, const H2D::rectangle_t&, const H2D::GxTree::Node*, const H2D::GxTree&): 
+  Assertion `aParent->nodeType() <= anares().nodeType()' failed.
+main_analyze: GxTree.cc:2887: 
+void H2D::GxTree::Node::performEncoding_L(H2D::GxTree::encoding_t&, bool, const H2D::GxTree&): 
+  Assertion `lMUSTF <= Node_L_Generic::scaleGrid(lNkf)->limit()' failed.
+
+candidates (kind=3, leafref=0):
+OpenStreetMap.azores.GxTree.3.0.default.8000.250
+OpenStreetMap.fiji.GxTree.3.0.default.4000.250
+OpenStreetMap.fiji.GxTree.3.0.default.8000.250
+OpenStreetMap.liechtenstein.GxTree.3.0.default.2000.250
+OpenStreetMap.malta.GxTree.3.0.default.4000.250
+
+tiger:
+main_analyze: GxTree.cc:2887: void H2D::GxTree::Node::performEncoding_L(H2D::GxTree::encoding_t&, bool, const H2D::GxTree&): Assertion `lMUSTF <= Node_L_Generic::scaleGrid(lNkf)->limit()' failed.
+main_analyze: GxTree.cc:2887: void H2D::GxTree::Node::performEncoding_L(H2D::GxTree::encoding_t&, bool, const H2D::GxTree&): Assertion `lMUSTF <= Node_L_Generic::scaleGrid(lNkf)->limit()' failed.
+main_analyze: GxTree.cc:2887: void H2D::GxTree::Node::performEncoding_L(H2D::GxTree::encoding_t&, bool, const H2D::GxTree&): Assertion `lMUSTF <= Node_L_Generic::scaleGrid(lNkf)->limit()' failed.
+main_analyze: GxTree.cc:2887: void H2D::GxTree::Node::performEncoding_L(H2D::GxTree::encoding_t&, bool, const H2D::GxTree&): Assertion `lMUSTF <= Node_L_Generic::scaleGrid(lNkf)->limit()' failed.
+

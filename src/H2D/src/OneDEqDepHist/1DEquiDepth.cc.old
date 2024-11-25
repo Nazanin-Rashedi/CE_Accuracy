@@ -1,0 +1,78 @@
+#include "1DEquiDepth.hh"
+#include <vector>
+#include <algorithm>
+
+
+namespace H2D {
+
+
+1DEquiDepth::1DEquiDepth(const Data2dim& aData,
+                            const double    aTheta) 
+              : _br(), _card(aData.total()), _theta(aTheta),_data(aData) {
+  aData.getBoundingRectangle(_br);
+}
+
+1DEquiDepth::~1DEquiDepth() {
+}
+
+
+uint
+1DEquiDepth::size() const {
+  return 0;
+}
+
+std::vector<double> createEquiDepthHistogram(const std::vector<double>& attributeValues) {
+    uint NUM_BINS = std::ceil(_card /_theta);
+    std::vector<double> binBoundaries(NUM_BINS + 1);
+    std::vector<double> sortedValues = attributeValues;
+    std::sort(sortedValues.begin(), sortedValues.end());
+
+    int valuesPerBin = (sortedValues.size()) / NUM_BINS;
+    int remainder = numValues % NUM_BINS;
+
+    binBoundaries[0] = sortedValues.front();
+    binBoundaries[NUM_BINS] = sortedValues.back();
+
+    for (int i = 1; i < NUM_BINS; i++) {
+        int index = i * valuesPerBin + std::min(i, remainder);
+        binBoundaries[i] = (sortedValues[index - 1] + sortedValues[index]) / 2.0;
+    }
+
+    return binBoundaries;
+}
+
+
+
+double
+1DEquiDepth::estimate(const rectangle_t& aQueryRectangle) const {
+  rectangle_t lIsec;
+  lIsec.isec(aQueryRectangle, br());
+  if(lIsec.hasZeroArea()) {
+    return theta();
+  }
+  const double lFraction = lIsec.area() / br().area();
+  // std::cout << " 1DEquiDepth::estimate: lFraction = " << lFraction << std::endl;
+  return std::max<double>(theta(), lFraction * card());
+}
+
+
+double
+1DEquiDepth::estimate(const query_t& lQuery) const {
+  rectangle_t aQueryRectangle = lQuery.rectangle();
+  return estimate(aQueryRectangle);
+}
+
+std::ostream&
+1DEquiDepth::print_name_param(std::ostream& os) const {
+  std::cout << h2d_kind_name(H2D_EST_1DEquiDepth) << ' '
+            << 0 // subkind
+            << '('
+            << ')'
+            << std::endl;
+  return os;
+} 
+
+
+
+} // end namespace
+
