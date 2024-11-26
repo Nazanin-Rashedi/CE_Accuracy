@@ -1,0 +1,65 @@
+# ========== C++ Specific ==========
+
+# Build files
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+
+# IDE or editor-specific directories and files
+.vscode/
+.idea/
+*.code-workspace
+
+# CMake build directories
+build/
+cmake-build-debug/
+cmake-build-release/
+CMakeCache.txt
+CMakeFiles/
+
+# Logs
+*.log
+
+# ========== Python Specific ==========
+
+# Bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and data
+*.log
+*.csv
+*.tsv
+*.sqlite3
+*.db
+
+# ========== OS/General Ignored Files ==========
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.bak
+*.swp
+*.tmp
+*.old
+
+
