@@ -24,7 +24,7 @@ To use the code for reproducing the evaluation results, the following steps are 
    
    ./main_prepare your/path/for/outputfile /path/to/aggregated/results
  
-cc-sc-esr-t1-qc-cnt-5datasets.rel includes the aggregated evaluation results on the 5 datasets in the subset S1 introduced in the paper. 
+[cc-sc-esr-t1-qc-cnt-5datasets.rel](./cc-sc-esr-t1-qc-cnt-5datasets.rel) includes the aggregated evaluation results on the 5 datasets in the subset S1 introduced in the paper. 
 
 Rank.py contains our python code for ranking the estimators.
 
