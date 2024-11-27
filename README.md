@@ -4,7 +4,7 @@ To use the code for reproducing the evaluation results, the following steps are 
 2. Clone the provided code, in $HOME for example.
 3. cd $HOME/LearnedVSTraditionalCE/src/H2D/src/main
 4. make
-5. Now you are ready to run experiments using the following:
+5. Run experiments using the following:
    cd $HOME/LearnedVSTraditionalCE/src/H2D/src/main
    For running experiments on dataset "longlat" in the set of datasets called "earthquake" using EXGB cardinality estimator, for example, you can run :
    ./main_queryset_estimates --sds earthquake --ds longlat --inDir /your/path/to/dataset --outDir your/path/for/outputfile --trainQDir /path/to/train/queries/dir --testQDir /path/to/test/queries/dir --exgb --kind -1
