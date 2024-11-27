@@ -57,8 +57,6 @@ bool ProcessQueryFile::init(const std::string &aDirIn,
   aCb.budget(lBudgetByte);
   aCb.sampleSize(lSampleSize);
   _esteval.setTotalCard(lTotal);
-
-
   // 6. calculate theta
   aCb.theta(std::ceil(std::sqrt(lTotal / std::log(lTotal))));
 
