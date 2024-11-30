@@ -1,6 +1,7 @@
 # The Accuracy of Learned Versus Traditional Cardinality Estimators: Unraveling the Evaluation Result Conundrum
 This repository contains the source code regarding our VLDB-2025 paper submission "The Accuracy of Learned Versus Traditional Cardinality Estimators: Unraveling the Evaluation Result Conundrum"
-To use the code for reproducing the evaluation results, the following steps are required:
+
+For reproducing the evaluation results, the following steps are required:
 1. Install XGBoost. The details are available at https://xgboost.readthedocs.io/en/latest/tutorials/c_api_tutorial.html
 2. Clone the provided code, in $HOME for example.
 3. cd $HOME/LearnedVSTraditionalCE/src/H2D/src/main
