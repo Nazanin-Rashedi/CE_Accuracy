@@ -14,7 +14,7 @@ For reproducing the evaluation results, the following steps are required:
    
    ./main_queryset_estimates --sds earthquake --ds longlat --inDir /your/path/to/dataset --outDir your/path/for/outputfile --trainQDir /path/to/train/queries/dir --testQDir /path/to/test/queries/dir --exgb --kind -1
    
-   For QTS-2 the kind argument needs to be set to 2
+   Note : For QTS-2 the kind argument needs to be set to 2
    
    We evaluate each estimator using 1,000,000 test queries. The generated .out files contain detailed evaluation results for each specific dataset and estimator, presented as two-dimensional matrices.
    In these matrices, the rows represent the selectivity classes of the queries, while the columns correspond to q-error classes.
