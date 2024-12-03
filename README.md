@@ -28,10 +28,6 @@ For reproducing the evaluation results, the following steps are required:
 The folders [datasets](./datasets) and [testQueries](./testQueries) contain some sample datasets and test queries while our repository of 18,020 datasets and the corresponding test queries are shared on https://pi3.informatik.uni-mannheim.de/rashedi/VLDB_2025/
 
 
-Rank.py contains our python code for ranking the estimators.
-
-dominace.py contains our python code for creating the dominance matrix and the corresponding visualization for pair-wise comparison of the estimators.
-
 Note: The experiments on DeepDB (https://github.com/DataManagementLab/deepdb-public), MSCN (https://github.com/andreaskipf/learnedcardinalities), and Naru (https://github.com/naru-project/naru) have been performed using their published code
 
 
