@@ -27,7 +27,6 @@ For reproducing the evaluation results, the following steps are required:
  
 The folders [datasets](./datasets) and [testQueries](./testQueries) contain some sample datasets and test queries while our repository of 18,020 datasets and the corresponding test queries are shared on https://pi3.informatik.uni-mannheim.de/rashedi/VLDB_2025/
 
-[cc-sc-esr-t1-qc-cnt-5datasets.rel](./cc-sc-esr-t1-qc-cnt-5datasets.rel) includes the aggregated evaluation results on the 5 datasets in the subset S1 introduced in the paper. 
 
 Rank.py contains our python code for ranking the estimators.
 
