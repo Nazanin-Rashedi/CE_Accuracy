@@ -1,4 +1,4 @@
-# The Accuracy of Learned Versus Traditional Cardinality Estimators: Unraveling the Evaluation Result Conundrum
+# The Accuracy of Cardinality Estimators: Unraveling the Evaluation Result Conundrum
 This repository contains the source code regarding our VLDB-2025 paper submission "The Accuracy of Learned Versus Traditional Cardinality Estimators: Unraveling the Evaluation Result Conundrum"
 
 For reproducing the evaluation results, the following steps are required:
